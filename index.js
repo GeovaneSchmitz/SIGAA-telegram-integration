@@ -37,15 +37,24 @@ let getUpdate = async () =>{
   })
   .then(classes => {
     return new Promise((resolve, reject) => {
+      classGrades(classes)
+        .then(() => resolve(classes))
+    })
+  })
+  .then(classes => {
+    return new Promise((resolve, reject) => {
       classTopics(classes)
         .then(() => resolve(classes))
     })
   })
   .then((classes) => {
-    return ClassNews(classes) // logoff afeter finished downloads 
+    return classNews(classes) // logoff afeter finished downloads 
   })
   .then(() => {
     return sigaa.account.logoff(token) // logoff afeter finished downloads 
+  })
+  .then(() =>{
+    process.exit(0)
   })
   .catch(data => {
     console.log(data);
@@ -60,8 +69,35 @@ let saveData = () => {
   );
 }
 
+async function classGrades(classes){
+  for (let studentClass of classes) { //for each class
+    console.log(studentClass.name)
+    var grades = await sigaa.classStudent.getGrades(
+      studentClass.id,
+      token
+    ); //this lists all grades
+    if (!data.grades[studentClass.name]) data.grades[studentClass.name] = []
 
-async function ClassNews(classes) {
+    let dataGradesString = data.grades[studentClass.name].map(JSON.stringify)
+
+    let newGrades = grades.filter(grade => {
+      return dataGradesString.indexOf(JSON.stringify(grade)) === -1
+    })
+
+    data.grades[studentClass.name] = grades;
+    saveData()
+    if(newGrades.length > 0) {
+  
+      let msg = `${escapeMsg(studentClass.name)}\nNova nota postada`
+
+      await telegram.sendMessage(credentials.chatId,
+        msg, { parse_mode: "html" })
+
+    }
+  }
+}
+
+async function classNews(classes) {
   for (let studentClass of classes) { //for each class
     console.log(studentClass.name)
     var news = await sigaa.classStudent.getNewsIndex(
