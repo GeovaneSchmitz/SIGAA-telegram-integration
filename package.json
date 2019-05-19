@@ -1,0 +1,12 @@
+{
+  "name": "discord-sigaa-integration",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/GeovaneSchmitz/discord-sigaa-integration.git",
+  "author": "Geovane Schmitz <contato@geovanems.com.br>",
+  "license": "MIT",
+  "dependencies": {
+    "sigga-api": "https://github.com/GeovaneSchmitz/IFSC-SIGAA-node-interface#04be1b77cd0bf776cb3b1acf979ce2d578492c51",
+    "telegraf": "^3.29.0"
+  }
+}
