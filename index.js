@@ -10,7 +10,8 @@ const sigaa = new Sigaa();
 
 const credentials = require("./credentials")
 
-let storeDataFilename = "./data.json";
+
+let storeDataFilename = __dirname + "/data.json";
 let data = require(storeDataFilename)
 let BaseDestiny = "/tmp"
 let token;
@@ -143,12 +144,20 @@ async function classTopics(classes) {
           if (photoExtension.indexOf(fileExtension) > -1) {
             await telegram.sendPhoto(credentials.chatId, {
               source: filepath
-            })
+            }).catch(e => console.log)
           } else {
             await telegram.sendDocument(credentials.chatId, {
               source: filepath
-            })
+            }).catch(e => console.log)
           }
+          await new Promise((resolve)=>{
+            fs.unlink(filepath, (err) => {
+              if (err) {
+                console.error(err)
+              }
+              resolve()
+            })
+          })
         }
       }
     }
@@ -214,10 +223,14 @@ async function downloadFile(studentClass, attachment) {
     });
   });
 }
-
+let request = false;
 require("http")
   .createServer(async (req, res) => {
     res.statusCode = 200; res.write("ok");
     res.end();
+    if(!request) {
+    request = true
     await getUpdate();
-  }).listen(3000, () => console.log("Now listening on port 3000"));
+    request = false
+    }
+  }).listen(process.env.PORT, () => console.log("Now listening on port " + process.env.PORT));
