@@ -39,12 +39,15 @@ let getUpdate = async () =>{
     return new Promise((resolve, reject) => {
       classGrades(classes)
         .then(() => resolve(classes))
+        .catch((e)=>{console.log})
+
     })
   })
   .then(classes => {
     return new Promise((resolve, reject) => {
       classTopics(classes)
         .then(() => resolve(classes))
+        .catch((e)=>{console.log})
     })
   })
   .then((classes) => {
