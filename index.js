@@ -10,7 +10,8 @@ const sigaa = new Sigaa();
 
 const credentials = require("./credentials")
 
-let storeDataFilename = "./data.json";
+
+let storeDataFilename = __dirname + "/data.json";
 let data = require(storeDataFilename)
 let BaseDestiny = "/tmp"
 let token;
@@ -36,15 +37,27 @@ let getUpdate = async () =>{
   })
   .then(classes => {
     return new Promise((resolve, reject) => {
+      classGrades(classes)
+        .then(() => resolve(classes))
+        .catch((e)=>{console.log})
+
+    })
+  })
+  .then(classes => {
+    return new Promise((resolve, reject) => {
       classTopics(classes)
         .then(() => resolve(classes))
+        .catch((e)=>{console.log})
     })
   })
   .then((classes) => {
-    return ClassNews(classes) // logoff afeter finished downloads 
+    return classNews(classes) // logoff afeter finished downloads 
   })
   .then(() => {
     return sigaa.account.logoff(token) // logoff afeter finished downloads 
+  })
+  .then(() =>{
+    process.exit(0)
   })
   .catch(data => {
     console.log(data);
@@ -59,8 +72,35 @@ let saveData = () => {
   );
 }
 
+async function classGrades(classes){
+  for (let studentClass of classes) { //for each class
+    console.log(studentClass.name)
+    var grades = await sigaa.classStudent.getGrades(
+      studentClass.id,
+      token
+    ); //this lists all grades
+    if (!data.grades[studentClass.name]) data.grades[studentClass.name] = []
 
-async function ClassNews(classes) {
+    let dataGradesString = data.grades[studentClass.name].map(JSON.stringify)
+
+    let newGrades = grades.filter(grade => {
+      return dataGradesString.indexOf(JSON.stringify(grade)) === -1
+    })
+
+    data.grades[studentClass.name] = grades;
+    saveData()
+    if(newGrades.length > 0) {
+  
+      let msg = `${escapeMsg(studentClass.name)}\nNova nota postada`
+
+      await telegram.sendMessage(credentials.chatId,
+        msg, { parse_mode: "html" })
+
+    }
+  }
+}
+
+async function classNews(classes) {
   for (let studentClass of classes) { //for each class
     console.log(studentClass.name)
     var news = await sigaa.classStudent.getNewsIndex(
@@ -143,12 +183,20 @@ async function classTopics(classes) {
           if (photoExtension.indexOf(fileExtension) > -1) {
             await telegram.sendPhoto(credentials.chatId, {
               source: filepath
-            })
+            }).catch(e => console.log)
           } else {
             await telegram.sendDocument(credentials.chatId, {
               source: filepath
-            })
+            }).catch(e => console.log)
           }
+          await new Promise((resolve)=>{
+            fs.unlink(filepath, (err) => {
+              if (err) {
+                console.error(err)
+              }
+              resolve()
+            })
+          })
         }
       }
     }
@@ -214,10 +262,14 @@ async function downloadFile(studentClass, attachment) {
     });
   });
 }
-
+let request = false;
 require("http")
   .createServer(async (req, res) => {
     res.statusCode = 200; res.write("ok");
     res.end();
+    if(!request) {
+    request = true
     await getUpdate();
-  }).listen(3000, () => console.log("Now listening on port 3000"));
+    request = false
+    }
+  }).listen(process.env.PORT, () => console.log("Now listening on port " + process.env.PORT));
