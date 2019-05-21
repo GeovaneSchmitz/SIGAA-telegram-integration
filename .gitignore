@@ -63,4 +63,6 @@ typings/
 credentials.json
 
 data.json
-data.1.json
+data.*.json
+credentials.*.json
+downloads
