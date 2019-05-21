@@ -264,7 +264,6 @@ async function downloadFile(attachment) {
     let file;
 
     let link = new URL(attachment.form.action);
-
     //http options
     const options = {
       hostname: link.hostname,
@@ -287,6 +286,8 @@ async function downloadFile(attachment) {
     var request = https.request(options, (response) => {
       let filename = response.headers['content-disposition'].replace(/([\S\s]*?)filename=\"/gm, '').slice(0, -1);
       let filepath = path.join(BaseDestiny, filename)
+    
+      console.log(filepath)
       file = fs.createWriteStream(filepath);
       response.pipe(file); //save to file
       file.on('finish', () => {
@@ -326,9 +327,9 @@ async function downloadFile(attachment) {
           }
         });
       });
-      request.write(postOptionsString); //send post parameters
-      request.end();
     });
+    request.write(postOptionsString); //send post parameters
+    request.end();
   });
 }
 let request = false;
