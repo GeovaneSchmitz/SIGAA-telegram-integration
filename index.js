@@ -78,7 +78,7 @@ let getUpdate = async () => {
           .catch((e) => { console.log })
       })
     })
-    
+
     .then(classes => {
       return new Promise((resolve, reject) => {
         classGrades(classes)
@@ -106,63 +106,71 @@ let getUpdate = async () => {
 
 async function classGrades(classes) {
   for (let studentClass of classes) { //for each class
-    console.log(studentClass.name)
-    var grades = await sigaa.classStudent.getGrades(
-      studentClass.id,
-      token
-    ); //this lists all grades
-    if (!data.grades[studentClass.name]) data.grades[studentClass.name] = []
+    try{
+      var grades = await sigaa.classStudent.getGrades(
+        studentClass.id,
+        token
+      )
+      if (!data.grades[studentClass.name]) data.grades[studentClass.name] = []
 
-    let dataGradesString = data.grades[studentClass.name].map(JSON.stringify)
+      let dataGradesString = data.grades[studentClass.name].map(JSON.stringify)
 
-    let newGrades = grades.filter(grade => {
-      return dataGradesString.indexOf(JSON.stringify(grade)) === -1
-    })
+      let newGrades = grades.filter(grade => {
+        return dataGradesString.indexOf(JSON.stringify(grade)) === -1
+      })
 
-    data.grades[studentClass.name] = grades;
-    saveData()
-    if (newGrades.length > 0) {
+      data.grades[studentClass.name] = grades;
+      saveData()
+      if (newGrades.length > 0) {
 
-      let msg = `${escapeMsg(studentClass.name)}\nNova nota postada`
+        let msg = `${escapeMsg(studentClass.name)}\nNova nota postada`
 
-      await telegram.sendMessage(credentials.chatId,
-        msg, { parse_mode: "html" })
+        await telegram.sendMessage(credentials.chatId,
+          msg, { parse_mode: "html" })
+        
 
+      }
+    }catch(err){
+      console.log(err)
     }
   }
 }
 
 async function classNews(classes) {
   for (let studentClass of classes) { //for each class
-    console.log(studentClass.name)
-    var news = await sigaa.classStudent.getNewsIndex(
-      studentClass.id,
-      token
-    ); //this lists all news
-    if (!data.news[studentClass.name]) data.news[studentClass.name] = []
+      try{
+      console.log(studentClass.name)
+      var news = await sigaa.classStudent.getNewsIndex(
+        studentClass.id,
+        token
+      ); //this lists all news
+      if (!data.news[studentClass.name]) data.news[studentClass.name] = []
 
-    let dataNewsString = data.news[studentClass.name].map(JSON.stringify)
+      let dataNewsString = data.news[studentClass.name].map(JSON.stringify)
 
-    let newNews = news.filter(news => {
-      let cloneNews = JSON.parse(JSON.stringify(news))
-      delete cloneNews.newsId.postOptions["javax.faces.ViewState"]
-      return dataNewsString.indexOf(JSON.stringify(cloneNews)) === -1
-    })
+      let newNews = news.filter(news => {
+        let cloneNews = JSON.parse(JSON.stringify(news))
+        delete cloneNews.newsId.postOptions["javax.faces.ViewState"]
+        return dataNewsString.indexOf(JSON.stringify(cloneNews)) === -1
+      })
 
-    data.news[studentClass.name] = news.map(news => {
-      let cloneNews = JSON.parse(JSON.stringify(news))
-      delete cloneNews.newsId.postOptions["javax.faces.ViewState"]
-      return cloneNews
-    });
-    saveData()
-    for (let news of newNews) { //for each news
-      let fullNews = await sigaa.classStudent.getNews(news.newsId, token)
-      let date = removeYear(escapeMsg(fullNews.date))
-      let msg = `${escapeMsg(studentClass.name)}\n<b>${escapeMsg(fullNews.name)}</b>\n${date}\n${escapeMsg(fullNews.content)}`
+      data.news[studentClass.name] = news.map(news => {
+        let cloneNews = JSON.parse(JSON.stringify(news))
+        delete cloneNews.newsId.postOptions["javax.faces.ViewState"]
+        return cloneNews
+      });
+      saveData()
+      for (let news of newNews) { //for each news
+        let fullNews = await sigaa.classStudent.getNews(news.newsId, token)
+        let date = removeYear(escapeMsg(fullNews.date))
+        let msg = `${escapeMsg(studentClass.name)}\n<b>${escapeMsg(fullNews.name)}</b>\n${date}\n${escapeMsg(fullNews.content)}`
 
-      await telegram.sendMessage(credentials.chatId,
-        msg, { parse_mode: "html" })
+        await telegram.sendMessage(credentials.chatId,
+          msg, { parse_mode: "html" })
 
+      }
+    }catch(err){
+      console.log(err)
     }
   }
 }
@@ -170,67 +178,75 @@ async function classNews(classes) {
 
 async function classTopics(classes) {
   for (let studentClass of classes) { //for each class
-    console.log(studentClass.name)
-    var topics = await sigaa.classStudent.getTopics(
-      studentClass.id,
-      token
-    ); //this lists all topics
-    if (!data.topics[studentClass.name]) data.topics[studentClass.name] = []
+    try{
+      console.log(studentClass.name)
+      var topics = await sigaa.classStudent.getTopics(
+        studentClass.id,
+        token
+      ); //this lists all topics
+      if (!data.topics[studentClass.name]) data.topics[studentClass.name] = []
 
-    let dataTopicsString = data.topics[studentClass.name].map(JSON.stringify)
-    let newTopics = topics.filter(topic => {
-      let cloneTopic = JSON.parse(JSON.stringify(topic))
-      if (cloneTopic.attachments) {
-        for (let i = 0; i < cloneTopic.attachments.length; i++) {
-          delete cloneTopic.attachments[i].form.postOptions["javax.faces.ViewState"]
-        }
-      }
-      return dataTopicsString.indexOf(JSON.stringify(cloneTopic)) === -1
-    })
-    data.topics[studentClass.name] = topics.map(topic => {
-      let cloneTopic = JSON.parse(JSON.stringify(topic))
-
-      if (cloneTopic.attachments) {
-        for (let i = 0; i < cloneTopic.attachments.length; i++) {
-          delete cloneTopic.attachments[i].form.postOptions["javax.faces.ViewState"]
-        }
-      }
-      return cloneTopic
-    });
-    saveData()
-
-    for (let topic of newTopics) { //for each topic
-      let date = topic.startDate === topic.endDate ? removeYear(topic.startDate) : removeYear(topic.startDate) + " - " + removeYear(topic.endDate);
-
-      let msg = `${escapeMsg(studentClass.name)}\n<b>${escapeMsg(topic.name)}</b>\n${escapeMsg(date)}\n${escapeMsg(topic.contentText)}`
-
-      await telegram.sendMessage(credentials.chatId,
-        msg, { parse_mode: "html" })
-      for (let attachment of topic.attachments) {
-        if (attachment.type == 'file') {
-          let filepath = await downloadFile(studentClass, attachment);
-          let fileExtension = filepath.slice(-3)
-          let photoExtension = ['jpg', 'png', 'gif']
-
-          if (photoExtension.indexOf(fileExtension) > -1) {
-            await telegram.sendPhoto(credentials.chatId, {
-              source: filepath
-            }).catch(e => console.log)
-          } else {
-            await telegram.sendDocument(credentials.chatId, {
-              source: filepath
-            }).catch(e => console.log)
+      let dataTopicsString = data.topics[studentClass.name].map(JSON.stringify)
+      let newTopics = topics.filter(topic => {
+        let cloneTopic = JSON.parse(JSON.stringify(topic))
+        if (cloneTopic.attachments) {
+          for (let i = 0; i < cloneTopic.attachments.length; i++) {
+            delete cloneTopic.attachments[i].form.postOptions["javax.faces.ViewState"]
           }
-          await new Promise((resolve) => {
-            fs.unlink(filepath, (err) => {
-              if (err) {
-                console.error(err)
-              }
-              resolve()
-            })
-          })
         }
-      }
+        return dataTopicsString.indexOf(JSON.stringify(cloneTopic)) === -1
+      })
+      data.topics[studentClass.name] = topics.map(topic => {
+        let cloneTopic = JSON.parse(JSON.stringify(topic))
+
+        if (cloneTopic.attachments) {
+          for (let i = 0; i < cloneTopic.attachments.length; i++) {
+            delete cloneTopic.attachments[i].form.postOptions["javax.faces.ViewState"]
+          }
+        }
+        return cloneTopic
+      });
+      saveData()
+
+      for (let topic of newTopics) { //for each topic
+        let date = topic.startDate === topic.endDate ? removeYear(topic.startDate) : removeYear(topic.startDate) + " - " + removeYear(topic.endDate);
+
+        let msg = `${escapeMsg(studentClass.name)}\n<b>${escapeMsg(topic.name)}</b>\n${escapeMsg(date)}\n${escapeMsg(topic.contentText)}`
+
+        await telegram.sendMessage(credentials.chatId,
+          msg, { parse_mode: "html" })
+        for (let attachment of topic.attachments) {
+          try{
+            if (attachment.type == 'file') {
+              let filepath = await downloadFile(attachment)
+              let fileExtension = filepath.slice(-3)
+              let photoExtension = ['jpg', 'png', 'gif']
+
+              if (photoExtension.indexOf(fileExtension) > -1) {
+                await telegram.sendPhoto(credentials.chatId, {
+                  source: filepath
+                })
+              } else {
+                await telegram.sendDocument(credentials.chatId, {
+                  source: filepath
+                })
+              }
+              await new Promise((resolve) => {
+                fs.unlink(filepath, (err) => {
+                  if (err) {
+                    console.error(err)
+                  }
+                  resolve()
+                })
+              })
+            }
+          }
+        catch(err){
+          console.log(err)
+        }
+      }}
+    }catch(err){
+      console.log(err)
     }
   }
 }
@@ -245,8 +261,6 @@ let escapeMsg = (msg) => {
 }
 async function downloadFile(attachment) {
   return await new Promise((resolve, reject) => {
-
-
     let file;
 
     let link = new URL(attachment.form.action);
@@ -277,35 +291,39 @@ async function downloadFile(attachment) {
       response.pipe(file); //save to file
       file.on('finish', () => {
         file.close((err) => {
-          if (err) {
+          if (err){
             console.log(err.message)
             fs.unlink(filepath, (err) => {
               if (err) console.log(err.message);
               reject(false);
             });
-          } else {
-            resolve(filepath)
           }
         }); // close() is async, call resolve after close completes.
+        resolve(filepath)
       });
       response.on('error', (err) => {
         console.log(err.message)
         file.close((err) => {
-          if (err) console.log(err.message)
-          fs.unlink(filepath, (err) => {
-            if (err) console.log(err.message);
-            reject(false);
-          });
+          if (err){
+            console.log(err.message)
+          }
         });
+        fs.unlink(filepath, (err) => {
+          if (err) console.log(err.message);
+        });
+        reject(false);
+
       });
       file.on('error', (err) => {
         console.log(err.message)
         file.close((err) => {
-          if (err) console.log(err.message)
-          fs.unlink(filepath, (err) => {
-            if (err) console.log(err.message);
-            reject(false);
-          });
+          if (err){
+            console.log(err.message)
+            fs.unlink(filepath, (err) => {
+              if (err) console.log(err.message);
+              reject(false);
+            });
+          }
         });
       });
       request.write(postOptionsString); //send post parameters
