@@ -9,7 +9,7 @@
     "start":"node index.js"
   },
   "dependencies": {
-    "sigaa-api": "https://github.com/GeovaneSchmitz/IFSC-SIGAA-node-interface#a4255bbf48004383b3660adbd3c564299b592a12",
+    "sigaa-api": "https://github.com/GeovaneSchmitz/IFSC-SIGAA-node-interface#21bda68ab359b2ed291406529ac1e9b6cb4069e5",
     "telegraf": "^3.29.0"
   }
 }
