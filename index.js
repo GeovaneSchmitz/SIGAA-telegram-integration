@@ -72,6 +72,8 @@ let getUpdate = async () => {
       }
     })
     .then(classes => {
+      console.log("Topics")
+
       return new Promise((resolve, reject) => {
         classTopics(classes)
           .then(() => resolve(classes))
@@ -79,7 +81,14 @@ let getUpdate = async () => {
       })
     })
 
+   
+    .then((classes) => {
+      console.log("News")
+      return classNews(classes) // logoff afeter finished downloads 
+    })
+
     .then(classes => {
+      console.log("grades")
       return new Promise((resolve, reject) => {
         classGrades(classes)
           .then(() => resolve(classes))
@@ -88,9 +97,6 @@ let getUpdate = async () => {
       })
     })
     
-    .then((classes) => {
-      return classNews(classes) // logoff afeter finished downloads 
-    })
     .then(() => {
       return sigaa.account.logoff(token) // logoff afeter finished downloads 
     })
@@ -343,3 +349,4 @@ require("http")
       request = false
     }
   }).listen(process.env.PORT, () => console.log("Now listening on port " + process.env.PORT));
+getUpdate().then(console.log).catch(console.log);
