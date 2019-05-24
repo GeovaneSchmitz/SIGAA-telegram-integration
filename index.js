@@ -2,9 +2,7 @@ const Sigaa = require("sigaa-api")
 
 const https = require('https');
 const fs = require('fs');
-const uuid = require('uuid/v4');
 const path = require('path');
-const querystring = require('querystring');
 const Telegram = require('telegraf/telegram')
 const sigaa = new Sigaa({
   "cache": false
@@ -16,6 +14,7 @@ let saveData = () => {
   }
   );
 }
+
 let credentials;
 try {
   credentials = require("./credentials")
@@ -55,86 +54,39 @@ let token;
 const telegram = new Telegram(credentials.token)
 
 let getUpdate = async () => {
-  await sigaa.account
-    .login(credentials.username, credentials.password) // login
-    .then(res => {
-      /* res = {
-        status:'LOGGED',
-        userType:'STUDENT',
-        token: random string
-      }
-      */
-      if (res.userType === 'STUDENT') {
-        token = res.token; // this stores access token
-        return sigaa.classStudent.getClasses(res.token); // this return a array with all classes
-      } else {
-        throw 'user is not a student'
-      }
-    })
-    .then(classes => {
-      console.log("Topics")
-
-      return new Promise((resolve, reject) => {
-        classTopics(classes)
-          .then(() => resolve(classes))
-          .catch((e) => { console.log })
-      })
-    })
-
-   
-    .then((classes) => {
-      console.log("News")
-      return classNews(classes) // logoff afeter finished downloads 
-    })
-
-    .then(classes => {
-      console.log("grades")
-      return new Promise((resolve, reject) => {
-        classGrades(classes)
-          .then(() => resolve(classes))
-          .catch((e) => { console.log })
-
-      })
-    })
-    
-    .then(() => {
-      return sigaa.account.logoff(token) // logoff afeter finished downloads 
-    })
-    .then(() => {
-      process.exit(0)
-    })
-    .catch(data => {
-      console.log(data);
-    });
+  let account = await sigaa.login(credentials.username, credentials.password) // login
+  let classes = account.getClasses(res.token); // this return a array with all classes
+  console.log("Topics")
+  await classTopics(classes)
+  console.log("News")
+  await classNews(classes)
+  console.log("grades")
+  classGrades(classes)
+  await account.logoff() // logoff afeter finished 
 }
 
 
 
 async function classGrades(classes) {
-  for (let studentClass of classes) { //for each class
+  for (let classStudent of classes) { //for each class
     try{
-      var grades = await sigaa.classStudent.getGrades(
-        studentClass.id,
-        token
-      )
-      if (!data.grades[studentClass.name]) data.grades[studentClass.name] = []
+      console.log(classStudent.name)
+      var grades = await classStudent.getGrades()
+      if (!data.grades[classStudent.name]) data.grades[classStudent.name] = []
 
-      let dataGradesString = data.grades[studentClass.name].map(JSON.stringify)
+      let dataGradesString = data.grades[classStudent.name].map(JSON.stringify)
 
       let newGrades = grades.filter(grade => {
         return dataGradesString.indexOf(JSON.stringify(grade)) === -1
       })
 
-      data.grades[studentClass.name] = grades;
-      saveData()
+      
       if (newGrades.length > 0) {
-
-        let msg = `${escapeMsg(studentClass.name)}\nNova nota postada`
-
+        let msg = `${escapeMsg(classStudent.name)}\nNova nota postada`
         await telegram.sendMessage(credentials.chatId,
           msg, { parse_mode: "html" })
-        
-
+        data.grades[classStudent.name] = grades;
+        saveData()
       }
     }catch(err){
       console.log(err)
@@ -143,37 +95,30 @@ async function classGrades(classes) {
 }
 
 async function classNews(classes) {
-  for (let studentClass of classes) { //for each class
+  for (let classStudent of classes) { //for each class
       try{
-      console.log(studentClass.name)
-      var news = await sigaa.classStudent.getNewsIndex(
-        studentClass.id,
-        token
-      ); //this lists all news
-      if (!data.news[studentClass.name]) data.news[studentClass.name] = []
+      console.log(classStudent.name)
+      var newsIndexList = await classStudent.getNewsIndex(); //this lists all news
+      if (!data.news[classStudent.name]) data.news[classStudent.name] = []
 
-      let dataNewsString = data.news[studentClass.name].map(JSON.stringify)
+      let dataNewsString = data.news[classStudent.name].map(JSON.stringify)
 
-      let newNews = news.filter(news => {
+      let newNews = newsIndexList.filter(news => {
         let cloneNews = JSON.parse(JSON.stringify(news))
         delete cloneNews.newsId.postOptions["javax.faces.ViewState"]
         return dataNewsString.indexOf(JSON.stringify(cloneNews)) === -1
       })
 
-      data.news[studentClass.name] = news.map(news => {
-        let cloneNews = JSON.parse(JSON.stringify(news))
-        delete cloneNews.newsId.postOptions["javax.faces.ViewState"]
-        return cloneNews
-      });
-      saveData()
       for (let news of newNews) { //for each news
         let fullNews = await sigaa.classStudent.getNews(news.newsId, token)
         let date = removeYear(escapeMsg(fullNews.date))
-        let msg = `${escapeMsg(studentClass.name)}\n<b>${escapeMsg(fullNews.name)}</b>\n${date}\n${escapeMsg(fullNews.content)}`
+        let msg = `${escapeMsg(classStudent.name)}\n<b>${escapeMsg(fullNews.name)}</b>\n${date}\n${escapeMsg(fullNews.content)}`
 
         await telegram.sendMessage(credentials.chatId,
           msg, { parse_mode: "html" })
-
+        delete cloneNews.newsId.postOptions["javax.faces.ViewState"]
+        data.news[classStudent.name].push(news);
+        saveData()
       }
     }catch(err){
       console.log(err)
@@ -183,50 +128,43 @@ async function classNews(classes) {
 
 
 async function classTopics(classes) {
-  for (let studentClass of classes) { //for each class
+  for (let classStudent of classes) { //for each class
     try{
-      console.log(studentClass.name)
-      var topics = await sigaa.classStudent.getTopics(
-        studentClass.id,
-        token
-      ); //this lists all topics
-      if (!data.topics[studentClass.name]) data.topics[studentClass.name] = []
+      console.log(classStudent.name)
+      var topics = await classStudent.getTopics(); //this lists all topics
+      if (!data.topics[classStudent.name]) data.topics[classStudent.name] = []
 
-      let dataTopicsString = data.topics[studentClass.name].map(JSON.stringify)
-      let newTopics = topics.filter(topic => {
-        let cloneTopic = JSON.parse(JSON.stringify(topic))
-        if (cloneTopic.attachments) {
-          for (let i = 0; i < cloneTopic.attachments.length; i++) {
-            delete cloneTopic.attachments[i].form.postOptions["javax.faces.ViewState"]
-          }
+      let dataTopicsString = data.topics[classStudent.name].map(JSON.stringify)
+
+      for (let topic of topics) { //for each topic
+        let topicObj ={
+          "name": topic.name,
+          "contentText": topic.contentText,
+          "attachments": [],
+          "startDate": topic.startDate,
+          "endDate": topic.endDate
         }
-        return dataTopicsString.indexOf(JSON.stringify(cloneTopic)) === -1
-      })
-      data.topics[studentClass.name] = topics.map(topic => {
-        let cloneTopic = JSON.parse(JSON.stringify(topic))
-
-        if (cloneTopic.attachments) {
-          for (let i = 0; i < cloneTopic.attachments.length; i++) {
-            delete cloneTopic.attachments[i].form.postOptions["javax.faces.ViewState"]
-          }
+        for(let attachment of topic.attachments){
+          topicObj.push(attachment.id)
         }
-        return cloneTopic
-      });
-      saveData()
+        let topicIndex = dataTopicsString.indexOf(JSON.stringify(topicObj))
+        if(topicIndex === -1){
+          let date = topic.startDate === topic.endDate ? removeYear(topic.startDate) : removeYear(topic.startDate) + " - " + removeYear(topic.endDate);
 
-      for (let topic of newTopics) { //for each topic
-        let date = topic.startDate === topic.endDate ? removeYear(topic.startDate) : removeYear(topic.startDate) + " - " + removeYear(topic.endDate);
-
-        let msg = `${escapeMsg(studentClass.name)}\n<b>${escapeMsg(topic.name)}</b>\n${escapeMsg(date)}\n${escapeMsg(topic.contentText)}`
-
-        await telegram.sendMessage(credentials.chatId,
-          msg, { parse_mode: "html" })
+          let msg = `${escapeMsg(classStudent.name)}\n<b>${escapeMsg(topic.name)}</b>\n${escapeMsg(date)}\n${escapeMsg(topic.contentText)}`
+  
+          await telegram.sendMessage(credentials.chatId,
+            msg, { parse_mode: "html" })
+          
+        }
         for (let attachment of topic.attachments) {
+          
+          if(topicIndex === -1 || data.topics)
           try{
             if (attachment.type == 'file') {
               let filepath = await downloadFile(attachment)
-              let fileExtension = filepath.slice(-3)
-              let photoExtension = ['jpg', 'png', 'gif']
+              let fileExtension = path.extname(filepath)
+              let photoExtension = ['.jpg', '.png', '.gif']
 
               if (photoExtension.indexOf(fileExtension) > -1) {
                 await telegram.sendPhoto(credentials.chatId, {
@@ -246,11 +184,12 @@ async function classTopics(classes) {
                 })
               })
             }
+
+          } catch(err) {
+            console.log(err)
           }
-        catch(err){
-          console.log(err)
         }
-      }}
+      }
     }catch(err){
       console.log(err)
     }

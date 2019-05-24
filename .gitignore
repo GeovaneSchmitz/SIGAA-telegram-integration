@@ -66,3 +66,5 @@ data.json
 data.*.json
 credentials.*.json
 downloads
+
+.vscode
