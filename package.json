@@ -2,14 +2,14 @@
   "name": "discord-sigaa-integration",
   "version": "0.0.1",
   "main": "index.js",
-  "repository": "https://github.com/GeovaneSchmitz/discord-sigaa-integration.git",
+  "repository": "https://github.com/GeovaneSchmitz/SIGAA-telegram-integration.git",
   "author": "Geovane Schmitz <contato@geovanems.com.br>",
   "license": "MIT",
   "scripts":{
     "start":"node index.js"
   },
   "dependencies": {
-    "sigaa-api": "https://github.com/GeovaneSchmitz/IFSC-SIGAA-node-interface#21bda68ab359b2ed291406529ac1e9b6cb4069e5",
+    "sigaa-api": "https://github.com/GeovaneSchmitz/SIGAA-node-interface#fa2a3ac64388ef0ed4c4e629667758f9fe3ffe2e",
     "telegraf": "^3.29.0"
   }
 }
