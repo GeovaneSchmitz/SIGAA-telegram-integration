@@ -87,7 +87,6 @@ http.createServer(async (req, res) => {
       request = false
     }
   }).listen(process.env.PORT, () => console.log("Now listening on port " + process.env.PORT));
-getUpdate().then(console.log).catch(console.log);
 
 
 
