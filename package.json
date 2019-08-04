@@ -5,11 +5,20 @@
   "repository": "https://github.com/GeovaneSchmitz/SIGAA-telegram-integration.git",
   "author": "Geovane Schmitz <contato@geovanems.com.br>",
   "license": "MIT",
-  "scripts":{
-    "start":"node index.js"
+  "scripts": {
+    "start": "node index.js"
   },
   "dependencies": {
-    "sigaa-api": "https://github.com/GeovaneSchmitz/SIGAA-node-interface#02783d4d7bdb30d6500bd089459b20f325ba022f",
+    "sigaa-api": "https://github.com/GeovaneSchmitz/SIGAA-node-interface#7aa58f78cfff45ca95fbdc1766becd4e120cdbfa",
     "telegraf": "^3.29.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-config-strongloop": "^2.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
