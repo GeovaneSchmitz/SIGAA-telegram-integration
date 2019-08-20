@@ -5,9 +5,15 @@ const topics = require('./libs/topics')
 const storage = require('./libs/storage')
 
 const getUpdate = async () => {
+  console.log('topics')
   await topics(storage)
+    .catch(err => console.log(err))
+  console.log('news')
   await news(storage)
+    .catch(err => console.log(err))
+  console.log('grades')
   await grades(storage)
+    .catch(err => console.log(err))
 }
 const port = process.env.PORT ? process.env.PORT : 3000
 
