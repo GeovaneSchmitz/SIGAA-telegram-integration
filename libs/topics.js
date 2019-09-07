@@ -9,7 +9,7 @@ const BaseDestiny = path.join(__dirname, '..', 'downloads')
 async function classTopics (storage) {
   const telegram = new Telegram(storage.credentials.token)
   const sigaa = new Sigaa({
-    urlBase: 'https://sigaa.ifsc.edu.br'
+    url: 'https://sigaa.ifsc.edu.br'
   })
 
   const account = await sigaa.login(storage.credentials.username, storage.credentials.password) // login
@@ -61,7 +61,10 @@ async function classTopics (storage) {
                 const filepath = await attachment.download(BaseDestiny)
                 const fileExtension = path.extname(filepath)
                 const photoExtension = ['.jpg', '.png', '.gif']
-
+                if (firstTopic) {
+                  await telegram.sendMessage(storage.credentials.chatId, textUtils.getPrettyClassName(classStudent.title))
+                  firstTopic = false
+                }
                 if (photoExtension.indexOf(fileExtension) > -1) {
                   await telegram.sendPhoto(storage.credentials.chatId, {
                     source: filepath
@@ -114,7 +117,8 @@ async function classTopics (storage) {
             try {
               if (attachment.type === 'video') {
                 await telegram.sendMessage(storage.credentials.chatId, attachment.src)
-                let msg = `${attachment.title}\n`
+                let msg = `${textUtils.getPrettyClassName(classStudent.title)}\n`
+                msg += `${attachment.title}\n`
                 msg += `${attachment.description}`
                 await telegram.sendMessage(storage.credentials.chatId, msg)
                 data[classStudent.id][topicIndex].attachments.push(attachment.src)

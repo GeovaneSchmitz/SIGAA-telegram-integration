@@ -5,7 +5,7 @@ const Telegram = require('telegraf/telegram')
 async function classGrades (storage) {
   const telegram = new Telegram(storage.credentials.token)
   const sigaa = new Sigaa({
-    urlBase: 'https://sigaa.ifsc.edu.br'
+    url: 'https://sigaa.ifsc.edu.br'
   })
 
   const account = await sigaa.login(storage.credentials.username, storage.credentials.password) // login
@@ -17,7 +17,7 @@ async function classGrades (storage) {
       const grades = await classStudent.getGrades()
       if (!data[classStudent.id]) data[classStudent.id] = []
       const storedGrades = JSON.parse(JSON.stringify(data[classStudent.id]))
-      const addedGradesStack = []
+      let addedGradesStack = []
       let gradesStack = ''
       const deletedGradesStack = []
       const usedGrades = []
@@ -25,7 +25,7 @@ async function classGrades (storage) {
         if (gradeGroup.grades === undefined) {
           let found = false
           for (const storedGrade of storedGrades) {
-            if (storedGrade.grades === undefined && storedGrade.name === gradeGroup.name) {
+            if (storedGrade.grades === undefined && storedGrade.name === gradeGroup.name && storedGrade.value !== null) {
               if (storedGrade.value !== gradeGroup.value) {
                 gradesStack += `Valor de ${gradeGroup.name} alterado\n`
               }
@@ -34,7 +34,7 @@ async function classGrades (storage) {
               break
             }
           }
-          if (!found) {
+          if (!found && gradeGroup.value !== null) {
             addedGradesStack.push(gradeGroup.name)
           }
         } else {
@@ -46,6 +46,9 @@ async function classGrades (storage) {
               }
               for (const grade of gradeGroup.grades) {
                 const foundGrade = storedGradeGroup.grades.find(storedGrade => {
+                  if (storedGrade.value === null) {
+                    return false
+                  }
                   if (JSON.stringify(storedGrade) === JSON.stringify(grade)) {
                     return true
                   } else if (storedGrade.name === grade.name &&
@@ -82,7 +85,7 @@ async function classGrades (storage) {
                   }
                   return false
                 })
-                if (!foundGrade) {
+                if (!foundGrade && grade.value !== null) {
                   addedGradesStack.push(`${grade.name} com peso ${grade.weight}`)
                 }
               }
@@ -92,9 +95,15 @@ async function classGrades (storage) {
             }
           })
           if (!foundGroup) {
-            addedGradesStack.push(`Grupo ${gradeGroup.name}`)
+            const gradeGroupStack = []
             for (const grade of gradeGroup.grades) {
-              addedGradesStack.push(`${grade.name} com peso ${grade.weight}`)
+              if (grade.value !== null) {
+                gradeGroupStack.push(`${grade.name} com peso ${grade.weight}`)
+              }
+            }
+            if (gradeGroupStack.length !== 0) {
+              addedGradesStack.push(`Grupo ${gradeGroup.name}`)
+              addedGradesStack = addedGradesStack.concat(gradeGroupStack)
             }
           }
         }

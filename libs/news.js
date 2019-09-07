@@ -5,7 +5,7 @@ const Telegram = require('telegraf/telegram')
 async function classNews (storage) {
   const telegram = new Telegram(storage.credentials.token)
   const sigaa = new Sigaa({
-    urlBase: 'https://sigaa.ifsc.edu.br'
+    url: 'https://sigaa.ifsc.edu.br'
   })
 
   const account = await sigaa.login(storage.credentials.username, storage.credentials.password) // login
