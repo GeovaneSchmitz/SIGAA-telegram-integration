@@ -4,7 +4,6 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
 # Runtime data
 pids
 *.pid
@@ -56,15 +55,12 @@ typings/
 
 # dotenv environment variables file
 .env
-
+.data
 # next.js build output
 .next
 
-credentials.json
-
 data.json
 data.*.json
-credentials.*.json
 downloads
 
 .vscode

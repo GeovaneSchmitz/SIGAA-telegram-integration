@@ -1,7 +1,11 @@
+require('dotenv').config()
+
 const http = require('http')
+
 const grades = require('./libs/grades')
 const news = require('./libs/news')
 const topics = require('./libs/topics')
+
 const storage = require('./libs/storage')
 
 const getUpdate = async () => {

@@ -286,6 +286,11 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
+dotenv@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.1.0.tgz#d811e178652bfb8a1e593c6dd704ec7e90d85ea2"
+  integrity sha512-GUE3gqcDCaMltj2++g6bRQ5rBJWtkWTmqmD0fo1RnnMuUqHNCt2oTPeDnS9n6fKYvlhn7AeBkb38lymBtWBQdA==
+
 emoji-regex@^7.0.1:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-7.0.3.tgz#933a04052860c85e83c122479c4748a8e4c72156"
@@ -1157,9 +1162,9 @@ shebang-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
   integrity sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
 
-"sigaa-api@https://github.com/GeovaneSchmitz/SIGAA-node-interface#0a0e700cb11865c96ad170a7dec5cd3585c7d4ce":
+"sigaa-api@https://github.com/GeovaneSchmitz/SIGAA-node-interface#6965aedb1f3e26a5ffc3f3c01433fc781fe8aa3a":
   version "0.0.3"
-  resolved "https://github.com/GeovaneSchmitz/SIGAA-node-interface#0a0e700cb11865c96ad170a7dec5cd3585c7d4ce"
+  resolved "https://github.com/GeovaneSchmitz/SIGAA-node-interface#6965aedb1f3e26a5ffc3f3c01433fc781fe8aa3a"
   dependencies:
     cheerio "^1.0.0-rc.3"
     he "^1.2.0"

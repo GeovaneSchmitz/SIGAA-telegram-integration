@@ -9,7 +9,8 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "sigaa-api": "https://github.com/GeovaneSchmitz/SIGAA-node-interface#0a0e700cb11865c96ad170a7dec5cd3585c7d4ce",
+    "dotenv": "^8.1.0",
+    "sigaa-api": "https://github.com/GeovaneSchmitz/SIGAA-node-interface#6965aedb1f3e26a5ffc3f3c01433fc781fe8aa3a",
     "telegraf": "^3.29.0"
   },
   "devDependencies": {

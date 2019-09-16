@@ -1,36 +1,36 @@
-const classNames = require('../classnames')
+const classNames = require('../.data/classnames')
 
 const textUtils = {}
 textUtils.getPrettyClassName = (className) => {
   return classNames[className] || className
 }
-const createDate = (timestamp) => {
-  const date = new Date(timestamp * 1000)
+textUtils.createDateString = (date) => {
   const day = '0' + date.getDate()
   const month = '0' + (date.getMonth() + 1)
   const year = date.getFullYear().toString()
+  let dateString
   if (date.getFullYear() === new Date().getFullYear()) {
-    return `${day.substr(-2)}/${month.substr(-2)}`
+    dateString = `${day.substr(-2)}/${month.substr(-2)}`
   } else {
-    return `${day.substr(-2)}/${month.substr(-2)}/${year.substr(-2)}`
+    dateString = `${day.substr(-2)}/${month.substr(-2)}/${year.substr(-2)}`
   }
+  if (date.getHours() !== 0 || date.getMinutes() !== 0) {
+    dateString += ` às ${createTime(date)}`
+  }
+  return dateString
 }
 
-textUtils.createDatesFromTimestamps = (startTimestamp, endTimestamp) => {
-  if (startTimestamp === endTimestamp) {
-    return createDate(startTimestamp)
+textUtils.createDatesString = (startDate, endDate) => {
+  if (startDate.valueOf() === endDate.valueOf()) {
+    return textUtils.createDateString(startDate)
   } else {
-    return `${createDate(startTimestamp)} - ${createDate(endTimestamp)}`
+    return `${textUtils.createDateString(startDate)} - ${textUtils.createDateString(endDate)}`
   }
 }
-const createTime = (timestamp) => {
-  const date = new Date(timestamp * 1000)
+const createTime = (date) => {
   const hours = '0' + date.getHours()
   const minutes = '0' + date.getMinutes()
   return `${hours.substr(-2)}:${minutes.substr(-2)}`
-}
-textUtils.createFullDateFromTimestamp = (timestamp) => {
-  return `${createDate(timestamp)} ${createTime(timestamp)}`
 }
 
 module.exports = textUtils

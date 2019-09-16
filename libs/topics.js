@@ -7,12 +7,12 @@ const fs = require('fs')
 const BaseDestiny = path.join(__dirname, '..', 'downloads')
 
 async function classTopics (storage) {
-  const telegram = new Telegram(storage.credentials.token)
+  const telegram = new Telegram(process.env.BOT_TOKEN)
   const sigaa = new Sigaa({
-    url: 'https://sigaa.ifsc.edu.br'
+    url: process.env.SIGAA_URL
   })
 
-  const account = await sigaa.login(storage.credentials.username, storage.credentials.password) // login
+  const account = await sigaa.login(process.env.SIGAA_USERNAME, process.env.SIGAA_PASSWORD) // login
   const classes = await account.getClasses() // this return a array with all classes
   const data = storage.getData('topics')
   for (const classStudent of classes) { // for each class
@@ -31,13 +31,13 @@ async function classTopics (storage) {
         const topicObj = {
           title: topic.title,
           contentText: topic.contentText,
-          startTimestamp: topic.startTimestamp,
-          endTimestamp: topic.endTimestamp
+          startTimestamp: Math.trunc(topic.startDate.valueOf() / 1000),
+          endTimestamp: Math.trunc(topic.endDate.valueOf() / 1000)
         }
         let topicIndex = dataTopicsWithoutAttachmentString.indexOf(JSON.stringify(topicObj))
         topicObj.attachments = []
         if (topicIndex === -1) {
-          const date = textUtils.createDatesFromTimestamps(topic.startTimestamp, topic.endTimestamp)
+          const date = textUtils.createDatesString(topic.startDate, topic.endDate)
           let msg = ''
           if (firstTopic) {
             msg += `${textUtils.getPrettyClassName(classStudent.title)}\n`
@@ -46,7 +46,7 @@ async function classTopics (storage) {
           msg += `${topic.title}\n`
           if (topic.contentText !== '') msg += `${topic.contentText}\n`
           msg += `${date}`
-          await telegram.sendMessage(storage.credentials.chatId, msg)
+          await telegram.sendMessage(process.env.CHAT_ID, msg)
           topicObj.attachments = []
           data[classStudent.id].push(topicObj)
           topicIndex = data[classStudent.id].length - 1
@@ -62,15 +62,15 @@ async function classTopics (storage) {
                 const fileExtension = path.extname(filepath)
                 const photoExtension = ['.jpg', '.png', '.gif']
                 if (firstTopic) {
-                  await telegram.sendMessage(storage.credentials.chatId, textUtils.getPrettyClassName(classStudent.title))
+                  await telegram.sendMessage(process.env.CHAT_ID, textUtils.getPrettyClassName(classStudent.title))
                   firstTopic = false
                 }
                 if (photoExtension.indexOf(fileExtension) > -1) {
-                  await telegram.sendPhoto(storage.credentials.chatId, {
+                  await telegram.sendPhoto(process.env.CHAT_ID, {
                     source: filepath
                   })
                 } else {
-                  await telegram.sendDocument(storage.credentials.chatId, {
+                  await telegram.sendDocument(process.env.CHAT_ID, {
                     source: filepath
                   })
                 }
@@ -86,8 +86,8 @@ async function classTopics (storage) {
                 })
               }
               if (attachment.type === 'quiz') {
-                const msg = `Pesquisa\n${attachment.title}\nPeríodo de envio inicia em ${textUtils.createFullDateFromTimestamp(attachment.startTimestamp)} e termina em ${textUtils.createFullDateFromTimestamp(attachment.endTimestamp)}`
-                await telegram.sendMessage(storage.credentials.chatId, `${textUtils.getPrettyClassName(classStudent.title)}\n${msg}`)
+                const msg = `Pesquisa\n${attachment.title}\nPeríodo de envio inicia em ${textUtils.createDateString(attachment.startDate)} e termina em ${textUtils.createDateString(attachment.endDate)}`
+                await telegram.sendMessage(process.env.CHAT_ID, `${textUtils.getPrettyClassName(classStudent.title)}\n${msg}`)
                 data[classStudent.id][topicIndex].attachments.push(attachment.id)
                 storage.saveData('topics', data)
               }
@@ -98,15 +98,15 @@ async function classTopics (storage) {
                 if (await attachment.getHaveGrade()) {
                   msg += `Tem nota\n`
                 }
-                msg += `Período de envio inicia em ${textUtils.createFullDateFromTimestamp(attachment.startTimestamp)} e termina em ${textUtils.createFullDateFromTimestamp(attachment.endTimestamp)}`
-                await telegram.sendMessage(storage.credentials.chatId, `${textUtils.getPrettyClassName(classStudent.title)}\n${msg}`)
+                msg += `Período de envio inicia em ${textUtils.createDateString(attachment.startDate)} e termina em ${textUtils.createDateString(attachment.startDate)}`
+                await telegram.sendMessage(process.env.CHAT_ID, `${textUtils.getPrettyClassName(classStudent.title)}\n${msg}`)
                 data[classStudent.id][topicIndex].attachments.push(attachment.id)
                 storage.saveData('topics', data)
               }
               if (attachment.type === 'webcontent') {
                 let msg = `${attachment.title}\n`
                 msg += `${await attachment.getDescription()}\n`
-                await telegram.sendMessage(storage.credentials.chatId, `${textUtils.getPrettyClassName(classStudent.title)}\n${msg}`)
+                await telegram.sendMessage(process.env.CHAT_ID, `${textUtils.getPrettyClassName(classStudent.title)}\n${msg}`)
                 data[classStudent.id][topicIndex].attachments.push(attachment.id)
                 storage.saveData('topics', data)
               }
@@ -116,11 +116,11 @@ async function classTopics (storage) {
           } else if (attachment.src && data[classStudent.id][topicIndex].attachments.indexOf(attachment.src) === -1) {
             try {
               if (attachment.type === 'video') {
-                await telegram.sendMessage(storage.credentials.chatId, attachment.src)
+                await telegram.sendMessage(process.env.CHAT_ID, attachment.src)
                 let msg = `${textUtils.getPrettyClassName(classStudent.title)}\n`
                 msg += `${attachment.title}\n`
                 msg += `${attachment.description}`
-                await telegram.sendMessage(storage.credentials.chatId, msg)
+                await telegram.sendMessage(process.env.CHAT_ID, msg)
                 data[classStudent.id][topicIndex].attachments.push(attachment.src)
                 storage.saveData('topics', data)
               }

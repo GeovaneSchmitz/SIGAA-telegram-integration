@@ -3,13 +3,13 @@ const Sigaa = require('sigaa-api')
 const Telegram = require('telegraf/telegram')
 
 async function classGrades (storage) {
-  const telegram = new Telegram(storage.credentials.token)
+  const telegram = new Telegram(process.env.BOT_TOKEN)
   const sigaa = new Sigaa({
-    url: 'https://sigaa.ifsc.edu.br'
+    url: process.env.SIGAA_URL
   })
 
-  const account = await sigaa.login(storage.credentials.username, storage.credentials.password) // login
-  const classes = await account.getClasses() // this return a array with all classes
+  const account = await sigaa.login(process.env.SIGAA_USERNAME, process.env.SIGAA_PASSWORD) // login
+  const classes = await account.getClasses(true) // this return a array with all classes
   const data = storage.getData('grades')
   for (const classStudent of classes) { // for each class
     try {
@@ -144,8 +144,7 @@ async function classGrades (storage) {
       }
       if (gradesStack !== '') {
         const msg = `${textUtils.getPrettyClassName(classStudent.title)}\n${gradesStack}`
-        await telegram.sendMessage(storage.credentials.chatId,
-          msg)
+        await telegram.sendMessage(process.env.CHAT_ID, msg)
         data[classStudent.id] = grades
         storage.saveData('grades', data)
       }

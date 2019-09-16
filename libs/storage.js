@@ -1,6 +1,6 @@
 const path = require('path')
 const fs = require('fs')
-const storageDataFilename = path.join(__dirname, '..', 'data.json')
+const storageDataFilename = path.join(__dirname, '..', '.data/', 'data.json')
 let data
 const storage = {}
 
@@ -20,27 +20,7 @@ try {
   }
   writeData()
 }
-let credentials
-try {
-  credentials = require('../credentials.json')
-  if (credentials.username === '' ||
-  credentials.password === '' ||
-  credentials.token === '' ||
-  credentials.chatId === '') {
-    throw new Error('invalid credentials')
-  }
-} catch (err) {
-  console.log('fill in the credentials.json')
-  credentials = {
-    username: '',
-    password: '',
-    token: '',
-    chatId: ''
-  }
-  fs.writeFile('../credentials.json', JSON.stringify(credentials), function (err) {
-    if (err) throw err
-  })
-}
+
 storage.saveData = (field, value) => {
   data[field] = value
   writeData()
@@ -48,5 +28,4 @@ storage.saveData = (field, value) => {
 storage.getData = (field) => {
   return data[field]
 }
-storage.credentials = credentials
 module.exports = storage
