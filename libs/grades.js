@@ -9,7 +9,7 @@ async function classGrades (storage) {
   })
 
   const account = await sigaa.login(process.env.SIGAA_USERNAME, process.env.SIGAA_PASSWORD) // login
-  const classes = await account.getClasses(true) // this return a array with all classes
+  const classes = await account.getClasses() // this return a array with all classes
   const data = storage.getData('grades')
   for (const classStudent of classes) { // for each class
     try {
