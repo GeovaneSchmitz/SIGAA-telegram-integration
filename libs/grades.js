@@ -25,11 +25,13 @@ async function classGrades (storage) {
         if (gradeGroup.grades === undefined) {
           let found = false
           for (const storedGrade of storedGrades) {
-            if (storedGrade.grades === undefined && storedGrade.name === gradeGroup.name && storedGrade.value !== null) {
-              if (storedGrade.value !== gradeGroup.value) {
-                gradesStack += `Valor de ${gradeGroup.name} alterado\n`
+            if (storedGrade.grades === undefined && storedGrade.name === gradeGroup.name) {
+              if (storedGrade.value !== null) {
+                if (storedGrade.value !== gradeGroup.value) {
+                  gradesStack += `Valor de ${gradeGroup.name} alterado\n`
+                }
+                found = true
               }
-              found = true
               usedGrades.push(storedGrades.indexOf(storedGrade))
               break
             }
@@ -145,6 +147,9 @@ async function classGrades (storage) {
       if (gradesStack !== '') {
         const msg = `${textUtils.getPrettyClassName(classStudent.title)}\n${gradesStack}`
         await telegram.sendMessage(process.env.CHAT_ID, msg)
+        if (process.env.CHAT_ID1) {
+          await telegram.sendMessage(process.env.CHAT_ID1, msg)
+        }
         data[classStudent.id] = grades
         storage.saveData('grades', data)
       }

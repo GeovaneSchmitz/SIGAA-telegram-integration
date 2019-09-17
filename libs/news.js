@@ -28,6 +28,9 @@ async function classNews (storage) {
           `${await news.getContent()}\n` +
           `Enviado em ${textUtils.createDateString(await news.getDate())}`
         await telegram.sendMessage(process.env.CHAT_ID, msg)
+        if (process.env.CHAT_ID1) {
+          await telegram.sendMessage(process.env.CHAT_ID1, msg)
+        }
         data[classStudent.id].push(news.id)
         storage.saveData('news', data)
       } catch (err) {
