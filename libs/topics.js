@@ -26,7 +26,6 @@ async function classTopics (storage) {
         delete topicClone.attachments
         return JSON.stringify(topicClone)
       })
-      let firstTopic = true
       for (const topic of topics) { // for each topic
         const topicObj = {
           title: topic.title,
@@ -38,11 +37,7 @@ async function classTopics (storage) {
         topicObj.attachments = []
         if (topicIndex === -1) {
           const date = textUtils.createDatesString(topic.startDate, topic.endDate)
-          let msg = ''
-          if (firstTopic) {
-            msg += `${textUtils.getPrettyClassName(classStudent.title)}\n`
-            firstTopic = false
-          }
+          let msg = `${textUtils.getPrettyClassName(classStudent.title)}\n`
           msg += `${topic.title}\n`
           if (topic.contentText !== '') msg += `${topic.contentText}\n`
           msg += `${date}`
@@ -64,13 +59,6 @@ async function classTopics (storage) {
                 const filepath = await attachment.download(BaseDestiny)
                 const fileExtension = path.extname(filepath)
                 const photoExtension = ['.jpg', '.png', '.gif']
-                if (firstTopic) {
-                  await telegram.sendMessage(process.env.CHAT_ID, textUtils.getPrettyClassName(classStudent.title))
-                  if (process.env.CHAT_ID1) {
-                    await telegram.sendMessage(process.env.CHAT_ID1, textUtils.getPrettyClassName(classStudent.title))
-                  }
-                  firstTopic = false
-                }
                 if (photoExtension.indexOf(fileExtension) > -1) {
                   const telegramPhoto = await telegram.sendPhoto(process.env.CHAT_ID, {
                     source: filepath
