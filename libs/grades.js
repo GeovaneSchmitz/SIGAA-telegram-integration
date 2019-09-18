@@ -118,7 +118,7 @@ async function classGrades (storage) {
         }
         gradesStack = `Notas Adicionadas\n${addedMsg}\n${gradesStack}`
       } else if (addedGradesStack.length === 1) {
-        gradesStack = `${addedGradesStack[0]} adicionada\n${gradesStack}`
+        gradesStack = `Nota ${addedGradesStack[0]} adicionada\n${gradesStack}`
       }
 
       const deletedGrades = storedGrades.filter((grade, index) => {
