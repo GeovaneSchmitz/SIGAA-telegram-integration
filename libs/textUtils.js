@@ -4,6 +4,12 @@ const textUtils = {}
 textUtils.getPrettyClassName = (className) => {
   return classNames[className] || className
 }
+textUtils.toTitleCase = (str) => {
+  return str.replace(/\w\S*/g, (txt) => {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  })
+}
+
 textUtils.createDateString = (date) => {
   const day = '0' + date.getDate()
   const month = '0' + (date.getMonth() + 1)
