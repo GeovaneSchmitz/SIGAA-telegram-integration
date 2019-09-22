@@ -14,7 +14,10 @@ if (process.env.USERS_ID_ALLOWLIST) {
   usersAllowlist = false
 }
 const botAnswers = () => {
-  bot.command('email', accessControl)
+  bot.command('start', accessControl)
+  bot.command('start', async (ctx) => {
+    ctx.reply(process.env.START_MSG)
+  })
   bot.command('email', async (ctx) => {
     const message = ctx.message
     const searchTerm = message.text.slice(message.text.indexOf(' ') + 1)
