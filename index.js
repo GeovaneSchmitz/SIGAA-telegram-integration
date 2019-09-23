@@ -11,8 +11,5 @@ http.createServer(async (req, res) => {
   res.end()
 }).listen(port, () => console.log('Now listening on port ' + port))
 
-botAnwsers()
 getUpdate()
-setInterval(() => {
-  getUpdate()
-}, process.env.UPDATE_INTERVAL)
+botAnwsers()

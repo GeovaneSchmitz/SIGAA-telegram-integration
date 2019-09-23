@@ -1,6 +1,7 @@
 const Telegraf = require('telegraf')
 const Sigaa = require('sigaa-api')
 const textUtils = require('./textUtils')
+const storage = require('./storage')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -20,17 +21,46 @@ const botAnswers = () => {
   })
   bot.command('email', async (ctx) => {
     const message = ctx.message
-    const searchTerm = message.text.slice(message.text.indexOf(' ') + 1)
-    const results = await searchTeacher(searchTerm)
+    const searchTerm = textUtils.removeAccents(message.text.slice(message.text.indexOf(' ') + 1).toLowerCase())
+    const teacherMembersClasses = storage.getData('members')
+    const keys = Object.keys(teacherMembersClasses)
     let response = ''
-    for (let i = 0; i < results.length; i++) {
+    let i = 0
+    for (const key of keys) {
       if (i > 5) break
-      const name = textUtils.toTitleCase(results[i].name)
-      const department = textUtils.toTitleCase(results[i].department)
-      const email = await results[i].getEmail()
+      const className = textUtils.removeAccents(teacherMembersClasses[key].className.toLowerCase())
+      const classNamePretty = textUtils.removeAccents(textUtils.getPrettyClassName(teacherMembersClasses[key].className).toLowerCase())
+      if (className.indexOf(searchTerm) > -1 || classNamePretty.indexOf(searchTerm) > -1) {
+        for (const teacher of teacherMembersClasses[key].teachers) {
+          const name = textUtils.toTitleCase(teacher.name)
+          const department = textUtils.toTitleCase(teacher.department)
+          let email
+          if (teacher.email !== null) {
+            email = teacher.email
+          } else {
+            email = process.env.EMAIL_UNAVAILABLE
+          }
+          response += `${textUtils.toTitleCase(className)}\n`
+          response += `${name}\n`
+          response += `${department}\n`
+          response += `${email}\n\n`
+          i++
+        }
+      }
+    }
+    const results = await searchTeacher(searchTerm)
+    for (const result of results) {
+      if (i > 5) break
+      const name = textUtils.toTitleCase(result.name)
+      const department = textUtils.toTitleCase(result.department)
+      let email = await results[i].getEmail()
+      if (email === null) {
+        email = process.env.EMAIL_UNAVAILABLE
+      }
       response += `${name}\n`
       response += `${department}\n`
       response += `${email}\n\n`
+      i++
     }
     if (response !== '') {
       ctx.reply(response.slice(0, -2))
@@ -41,19 +71,49 @@ const botAnswers = () => {
   bot.command('agenda', accessControl)
   bot.command('agenda', async (ctx) => {
     const message = ctx.message
-    const searchTerm = message.text.slice(message.text.indexOf(' ') + 1)
-    const results = await searchTeacher(searchTerm)
+    const searchTerm = textUtils.removeAccents(message.text.slice(message.text.indexOf(' ') + 1).toLowerCase())
+    const teacherMembersClasses = storage.getData('members')
+    const keys = Object.keys(teacherMembersClasses)
     let response = ''
-    for (let i = 0; i < results.length; i++) {
+    let i = 0
+    for (const key of keys) {
       if (i > 5) break
-      const name = textUtils.toTitleCase(results[i].name)
-      const department = textUtils.toTitleCase(results[i].department)
+      const className = textUtils.removeAccents(teacherMembersClasses[key].className.toLowerCase())
+      const classNamePretty = textUtils.removeAccents(textUtils.getPrettyClassName(teacherMembersClasses[key].className).toLowerCase())
+      if (className.indexOf(searchTerm) > -1 || classNamePretty.indexOf(searchTerm) > -1) {
+        for (const teacher of teacherMembersClasses[key].teachers) {
+          const name = textUtils.toTitleCase(teacher.name)
+          const department = textUtils.toTitleCase(teacher.department)
+          let calendar
+          if (teacher.email !== null) {
+            calendar = `https://zimbra.ifsc.edu.br/service/home/${teacher.email}/atividadesIFSC.html?view=week`
+          } else {
+            calendar = process.env.CALENDAR_UNAVAILABLE
+          }
+          response += `${textUtils.toTitleCase(className)}\n`
+          response += `${name}\n`
+          response += `${department}\n`
+          response += `${calendar}\n\n`
+          i++
+        }
+      }
+    }
+    const results = await searchTeacher(searchTerm)
+    for (const result of results) {
+      if (i > 5) break
+      const name = textUtils.toTitleCase(result.name)
+      const department = textUtils.toTitleCase(result.department)
       const email = await results[i].getEmail()
-      const calendar = `https://zimbra.ifsc.edu.br/service/home/${email}/atividadesIFSC.html?view=week\n\n`
-
+      let calendar
+      if (email !== null) {
+        calendar = `https://zimbra.ifsc.edu.br/service/home/${email}/atividadesIFSC.html?view=week`
+      } else {
+        calendar = process.env.CALENDAR_UNAVAILABLE
+      }
       response += `${name}\n`
       response += `${department}\n`
-      response += `${calendar}\n`
+      response += `${calendar}\n\n`
+      i++
     }
     if (response !== '') {
       ctx.reply(response.slice(0, -2))
@@ -80,7 +140,7 @@ async function searchTeacher (searchTerm) {
   const searchTeacher = sigaa.search.teacher()
   const campusList = await searchTeacher.getCampusList()
   if (process.env.CAMPUS_SEARCH) {
-    const campus = campusList.find(campus => campus.name.includes(process.env.CAMPUS_SEARCH)) // search in campus FLN
+    const campus = campusList.find(campus => campus.name.includes(process.env.CAMPUS_SEARCH)) // search in campus
     return searchTeacher.search(searchTerm, campus)
   } else {
     return searchTeacher.search(searchTerm)

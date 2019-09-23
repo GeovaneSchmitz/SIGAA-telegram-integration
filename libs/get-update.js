@@ -5,11 +5,12 @@ const Sigaa = require('sigaa-api')
 const grades = require('./grades')
 const news = require('./news')
 const topics = require('./topics')
+const members = require('./members')
 
 const storage = require('./storage')
 const textUtils = require('./textUtils')
 
-const getUpdate = async () => {
+const getUpdateMsg = async () => {
   const telegram = new Telegram(process.env.BOT_TOKEN)
   const sigaa = new Sigaa({
     url: process.env.SIGAA_URL
@@ -43,4 +44,16 @@ const getUpdate = async () => {
   }
 }
 
-module.exports = getUpdate
+const main = () => {
+  getUpdateMsg()
+  setInterval(() => {
+    getUpdateMsg()
+  }, process.env.UPDATE_INTERVAL)
+
+  members(storage)
+  setInterval(() => {
+    members(storage)
+  }, process.env.MEMBERS_UPADATE_INTERVAL)
+}
+
+module.exports = main

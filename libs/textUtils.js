@@ -33,6 +33,22 @@ textUtils.createDatesString = (startDate, endDate) => {
     return `${textUtils.createDateString(startDate)} - ${textUtils.createDateString(endDate)}`
   }
 }
+
+textUtils.removeAccents = (strAccents) => {
+  const accents = 'ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏìíîïÙÚÛÜùúûüÑñŠšŸÿýŽž'
+  const accentsOut = 'AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiUUUUuuuuNnSsYyyZz'
+  const textArray = strAccents.split('')
+  const textAccentsOut = []
+  const strAccentsLen = textArray.length
+  for (let i = 0; i < strAccentsLen; i++) {
+    if (accents.indexOf(textArray[i]) !== -1) {
+      textAccentsOut[i] = accentsOut.substr(accents.indexOf(textArray[i]), 1)
+    } else {
+      textAccentsOut[i] = textArray[i]
+    }
+  }
+  return textAccentsOut.join('')
+}
 const createTime = (date) => {
   const hours = '0' + date.getHours()
   const minutes = '0' + date.getMinutes()

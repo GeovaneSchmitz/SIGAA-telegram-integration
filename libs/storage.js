@@ -14,9 +14,6 @@ try {
   data = require(storageDataFilename)
 } catch (err) {
   data = {
-    topics: {},
-    grades: {},
-    news: {}
   }
   writeData()
 }
@@ -26,6 +23,10 @@ storage.saveData = (field, value) => {
   writeData()
 }
 storage.getData = (field) => {
-  return data[field]
+  if (data[field] === undefined) {
+    return {}
+  } else {
+    return data[field]
+  }
 }
 module.exports = storage
