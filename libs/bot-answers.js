@@ -40,7 +40,7 @@ const botAnswers = () => {
           } else {
             email = process.env.EMAIL_UNAVAILABLE
           }
-          response += `${textUtils.toTitleCase(className)}\n`
+          response += `${textUtils.getPrettyClassName(teacherMembersClasses[key].className)}\n`
           response += `${name}\n`
           response += `${department}\n`
           response += `${email}\n\n`
@@ -90,7 +90,7 @@ const botAnswers = () => {
           } else {
             calendar = process.env.CALENDAR_UNAVAILABLE
           }
-          response += `${textUtils.toTitleCase(className)}\n`
+          response += `${textUtils.getPrettyClassName(teacherMembersClasses[key].className)}\n`
           response += `${name}\n`
           response += `${department}\n`
           response += `${calendar}\n\n`
