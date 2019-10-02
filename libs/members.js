@@ -7,7 +7,7 @@ async function classTeacherMembers (storage) {
   })
   const account = await sigaa.login(process.env.SIGAA_USERNAME, process.env.SIGAA_PASSWORD) // login
   const classes = await account.getClasses() // this return a array with all classes
-  const data = storage.getData('members')
+  const data = []
   for (const classStudent of classes) { // for each class
     try {
       var members = await classStudent.getMembers() // this lists all members
