@@ -117,9 +117,11 @@ async function classGrades (classStudent, storage, telegram) {
     if (gradeGroup.grades) {
       deletedGradesStack.push(gradeGroup.name)
       for (const grade of gradeGroup.grades) {
-        deletedGradesStack.push(`${grade.name} com peso ${grade.weight}`)
+        if (grade.value !== null) {
+          deletedGradesStack.push(`${grade.name} com peso ${grade.weight}`)
+        }
       }
-    } else {
+    } else if (gradeGroup.value !== null) {
       deletedGradesStack.push(gradeGroup.name)
     }
   }
