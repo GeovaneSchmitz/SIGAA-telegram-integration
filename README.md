@@ -1,10 +1,13 @@
-# Disclaimer
+Criado para informar e acelera o uso do SIGAA.
+## Disclaimer
 Este bot não é oficial.
-Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre.
+Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando .
 
-# Funcionalidades
-
-## Notificações
+## Funcionalidades
+![Start Command Screenshot](screenshot_start.jpg?raw=true "/start")
+![Email Command Screenshot](screenshot_email.jpg?raw=true "/email")
+![Calendar Command Screenshot](screenshot_calendar.jpg?raw=true "/agenda")
+### Notificações
 * Em grupos ou chat privado
 * Alteração em suas notas sem dizer o valor
 * Notícias postadas por seus professores
@@ -13,13 +16,13 @@ Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre.
 * Tarefas
 * Também notifica sobre questionário, vídeos, 'conteúdo da web'
  
-## Comandos
+### Comandos
 * Busca de email e agenda de professor
 `/agenda <nome do professor ou da turma>` ou `/email <nome do professor ou da turma>`
 * Ver as notas `/viewgrades` 
 * Forçar atualização `/forceupdate`
  
-# Para executar:
+## Para executar:
 * Instalar o nodejs
 * Instalar as dependências do projeto
 use `npm install` ou `yarn`
