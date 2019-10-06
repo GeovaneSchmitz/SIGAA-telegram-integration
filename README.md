@@ -1,7 +1,7 @@
 Criado para informar e acelera o uso do SIGAA.
 ## Disclaimer
 Este bot não é oficial.
-Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando .
+Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando Web Scraping com nodejs e telegraf.
 
 ## Funcionalidades
 <img alt="/start" src="assets/screenshot_start.jpg" width="290" /><img alt="/email" src="assets/screenshot_email.jpg" width="290" /><img alt="/agenda" src="assets/screenshot_calendar.jpg" width="290" />
