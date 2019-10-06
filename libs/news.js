@@ -1,4 +1,5 @@
 const textUtils = require('./textUtils')
+const config = require('../config')
 
 async function classNews (classStudent, storage, telegram) {
   const data = storage.getData('news')
@@ -15,9 +16,8 @@ async function classNews (classStudent, storage, telegram) {
         `${news.title}\n` +
         `${await news.getContent()}\n` +
         `Enviado em ${textUtils.createDateString(await news.getDate())}`
-      await telegram.sendMessage(process.env.CHAT_ID, msg)
-      if (process.env.CHAT_ID1) {
-        await telegram.sendMessage(process.env.CHAT_ID1, msg)
+      for (const chatID of config.notifications.chatIDs) {
+        await telegram.sendMessage(chatID, msg)
       }
       data[classStudent.id].push(news.id)
       storage.saveData('news', data)

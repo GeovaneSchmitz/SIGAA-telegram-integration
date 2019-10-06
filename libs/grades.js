@@ -1,10 +1,19 @@
 const textUtils = require('./textUtils')
+const config = require('../config')
 
 async function classGrades (classStudent, storage, telegram) {
   const data = storage.getData('grades')
   const grades = await classStudent.getGrades()
-  if (!data[classStudent.id]) data[classStudent.id] = []
-  const storedGrades = JSON.parse(JSON.stringify(data[classStudent.id]))
+  if (!data[classStudent.id]) {
+    data[classStudent.id] = {}
+  }
+  if (!data[classStudent.id].className) {
+    data[classStudent.id].className = classStudent.title
+  }
+  if (!data[classStudent.id].grades) {
+    data[classStudent.id].grades = []
+  }
+  const storedGrades = data[classStudent.id].grades
   let addedGradesStack = []
   let gradesStack = ''
   const deletedGradesStack = []
@@ -136,11 +145,12 @@ async function classGrades (classStudent, storage, telegram) {
   }
   if (gradesStack !== '') {
     const msg = `${textUtils.getPrettyClassName(classStudent.title)}\n${gradesStack}`
-    await telegram.sendMessage(process.env.CHAT_ID, msg)
-    if (process.env.CHAT_ID1) {
-      await telegram.sendMessage(process.env.CHAT_ID1, msg)
+    for (const chatID of config.notifications.chatIDs) {
+      await telegram.sendMessage(chatID, msg)
     }
-    data[classStudent.id] = grades
+    data[classStudent.id] = {}
+    data[classStudent.id].grades = grades
+    data[classStudent.id].className = classStudent.title
     storage.saveData('grades', data)
   }
 }

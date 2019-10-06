@@ -1,7 +1,6 @@
 require('dotenv').config()
-
-const getUpdate = require('./libs/get-update')
-const botAnwsers = require('./libs/bot-answers')
+require('./libs/getUpdate')
+require('./libs/commands')
 
 const http = require('http')
 const port = process.env.PORT ? process.env.PORT : 3000
@@ -10,6 +9,3 @@ http.createServer(async (req, res) => {
   res.write('ok')
   res.end()
 }).listen(port, () => console.log('Now listening on port ' + port))
-
-getUpdate()
-botAnwsers()

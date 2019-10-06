@@ -1,9 +1,10 @@
 const Sigaa = require('sigaa-api')
+const config = require('../config')
 
 async function classTeacherMembers (storage) {
   console.log('loading teacher members')
   const sigaa = new Sigaa({
-    url: process.env.SIGAA_URL
+    url: config.sigaa.url
   })
   const account = await sigaa.login(process.env.SIGAA_USERNAME, process.env.SIGAA_PASSWORD) // login
   const classes = await account.getClasses() // this return a array with all classes
@@ -11,10 +12,10 @@ async function classTeacherMembers (storage) {
   for (const classStudent of classes) { // for each class
     try {
       var members = await classStudent.getMembers() // this lists all members
-      data[classStudent.id] = {
+      data.push({
         className: classStudent.title,
         teachers: members.teachers
-      }
+      })
     } catch (err) {
       console.log(err)
     }

@@ -1,8 +1,8 @@
-const classNames = require('../.data/classnames')
+const config = require('../config')
 
 const textUtils = {}
 textUtils.getPrettyClassName = (className) => {
-  return classNames[className] || className
+  return config.classnames[className] || className
 }
 textUtils.toTitleCase = (str) => {
   return str.replace(/\w\S*/g, (txt) => {
