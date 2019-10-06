@@ -53,20 +53,20 @@ module.exports = {
     },
 
     forceUpdade: {
-      command: 'forceupdate', // command that must be entered without the slash. e.g. /forceupdade
+      command: 'atualizar', // command that must be entered without the slash. e.g. /atualizar
       enable: false, // if command is enabled
       allowlistEnable: false, // false for all users or true for user in allowlist
       allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdate 'message.from.id'
       denyMsg: 'Este comando é restrito', // message sent if user not in allowlist, if string is empty nothing is sent
-      startMsg: 'Atualizando as notificações', // message sent as feedback after type the command
-      isInProgressMsg: 'Já estava em progresso', // message sent if bot was already updating
+      startMsg: 'Buscando por novos conteúdos', // message sent as feedback after type the command
+      isInProgressMsg: 'Já está em progresso', // message sent if bot was already updating
       endMsg: 'Finalizado' // message sent after finishing updating
     },
 
     viewGrades: {
-      command: 'viewgrades', // command that must be entered without the slash. e.g. /viewgrades matematica
+      command: 'vernotas', // command that must be entered without the slash. e.g. /vernotas matematica
       enable: false, // if command is enabled
-      allowlistEnable: true, // false for all users or true for user in allowlist
+      allowlistEnable: false, // false for all users or true for user in allowlist
       allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdate 'message.from.id'
       denyMsg: 'Este comando é restrito', // message sent if user not in allowlist, if string is empty nothing is sent
       noResultsMsg: 'Sem resultado' // message sent if no search results
