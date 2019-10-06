@@ -4,9 +4,7 @@ Este bot não é oficial.
 Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando .
 
 ## Funcionalidades
-<img alt="/start" src="screenshot_start.jpg" width="200" />
-<img alt="/email" src="screenshot_email.jpg" width="200" />
-<img alt="/agenda" src="screenshot_calendar.jpg" width="200" />
+<img alt="/start" src="screenshot_start.jpg" width="310" /><img alt="/email" src="screenshot_email.jpg" width="310" /><img alt="/agenda" src="screenshot_calendar.jpg" width="310" />
 
 ### Notificações
 * Em grupos ou chat privado
