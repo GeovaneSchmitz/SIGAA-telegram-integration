@@ -33,7 +33,7 @@ const calendarSearchCommand = () => {
         calendar = calendarSearchConfig.calendarUnavailableMsg
       }
       if (result.className) {
-        response += `${results.className}\n`
+        response += `${result.className}\n`
       }
       response += `${result.name}\n`
       response += `${result.department}\n`
