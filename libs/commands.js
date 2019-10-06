@@ -24,6 +24,7 @@ const calendarSearchCommand = () => {
     const message = ctx.message
     const searchTerm = textUtils.removeAccents(message.text.slice(message.text.indexOf(' ') + 1).toLowerCase())
     let response = ''
+    ctx.replyWithChatAction('typing')
     const results = await getTeacher(searchTerm, calendarSearchConfig.maxResultAmount)
     for (const result of results) {
       let calendar
@@ -56,6 +57,7 @@ const emailSearchCommand = () => {
     const message = ctx.message
     const searchTerm = textUtils.removeAccents(message.text.slice(message.text.indexOf(' ') + 1).toLowerCase())
     let response = ''
+    ctx.replyWithChatAction('typing')
     const results = await getTeacher(searchTerm, emailSearchConfig.maxResultAmount)
     for (const result of results) {
       let email
