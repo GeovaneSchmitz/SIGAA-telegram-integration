@@ -4,9 +4,10 @@ Este bot não é oficial.
 Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando .
 
 ## Funcionalidades
-![Start Command Screenshot](screenshot_start.jpg?raw=true "/start")
-![Email Command Screenshot](screenshot_email.jpg?raw=true "/email")
-![Calendar Command Screenshot](screenshot_calendar.jpg?raw=true "/agenda")
+<img alt="/start" src="screenshot_start.jpg" width="200" />
+<img alt="/email" src="screenshot_email.jpg" width="200" />
+<img alt="/agenda" src="screenshot_calendar.jpg" width="200" />
+
 ### Notificações
 * Em grupos ou chat privado
 * Alteração em suas notas sem dizer o valor
