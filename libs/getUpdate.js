@@ -10,6 +10,7 @@ const members = require('./members')
 const config = require('../config')
 const storage = require('./storage')
 const textUtils = require('./textUtils')
+const sendLog = require('./sendLog')
 
 let isUpdating = false
 
@@ -29,23 +30,27 @@ const getUpdateMsg = async () => {
           console.log('> topics')
           await topics(classStudent, storage, telegram)
         } catch (err) {
-          console.log(err)
+          console.error(err)
+          sendLog.sendError(err)
         }
         try {
           console.log('> news')
           await news(classStudent, storage, telegram)
         } catch (err) {
-          console.log(err)
+          console.error(err)
+          sendLog.sendError(err)
         }
         try {
           console.log('> grades')
           await grades(classStudent, storage, telegram)
         } catch (err) {
-          console.log(err)
+          console.error(err)
+          sendLog.sendError(err)
         }
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      sendLog.sendError(err)
     }
     // eslint-disable-next-line require-atomic-updates
     isUpdating = false

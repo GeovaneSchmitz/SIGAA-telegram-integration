@@ -14,6 +14,10 @@ module.exports = {
     updateInterval: 1800000 // in miliseconds. 1800000 is 30min
   },
 
+  logs: {
+    chatIDs: [] // array with chatId will that be notify, chatId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.chat.id'
+  },
+
   search: {
     campusFilter: '', // String to filter the campus
     intervalToFetchClassMembers: 43200000 // in miliseconds. 43200000 is 12h

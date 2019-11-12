@@ -4,6 +4,7 @@ const textUtils = require('./textUtils')
 const storage = require('./storage')
 const config = require('../config')
 const getUpdate = require('./getUpdate')
+const sendLog = require('./sendLog')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -118,7 +119,6 @@ const viewGradesCommand = () => {
     }
     const grades = storage.getData('grades')
     let keys = Object.keys(grades)
-    console.log(searchTerm)
     if (searchTerm) {
       keys = keys.filter(key => {
         const className = textUtils.removeAccents(grades[key].className.toLowerCase())
@@ -172,7 +172,9 @@ const accessControlAllowlist = (config) => {
       } else {
         if (config.denyMsg) {
           ctx.reply(config.denyMsg)
-          console.log(`INFO: Command /${config.command} denied access for user ${ctx.message.from.username}, add ${ctx.message.from.id} to allow the user`)
+          const msg = `Command /${config.command} denied access for user ${ctx.message.from.username}, add ${ctx.message.from.id} to allow the user`
+          console.log(`INFO: ${msg}`)
+          sendLog.sendInfo(msg)
         }
       }
     })

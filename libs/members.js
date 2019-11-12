@@ -1,5 +1,6 @@
 const Sigaa = require('sigaa-api')
 const config = require('../config')
+const sendLog = require('./sendLog')
 
 async function classTeacherMembers (storage) {
   console.log('loading teacher members')
@@ -17,7 +18,8 @@ async function classTeacherMembers (storage) {
         teachers: members.teachers
       })
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      sendLog.sendError(err)
     }
   }
   storage.saveData('members', data)

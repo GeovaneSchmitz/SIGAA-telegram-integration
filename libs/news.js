@@ -1,5 +1,6 @@
 const textUtils = require('./textUtils')
 const config = require('../config')
+const sendLog = require('./sendLog')
 
 async function classNews (classStudent, storage, telegram) {
   const data = storage.getData('news')
@@ -22,7 +23,8 @@ async function classNews (classStudent, storage, telegram) {
       data[classStudent.id].push(news.id)
       storage.saveData('news', data)
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      sendLog.sendError(err)
     }
   }
 }

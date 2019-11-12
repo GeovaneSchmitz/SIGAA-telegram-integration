@@ -2,6 +2,7 @@ const path = require('path')
 const textUtils = require('./textUtils')
 const fs = require('fs')
 const config = require('../config')
+const sendLog = require('./sendLog')
 
 const BaseDestiny = path.join(__dirname, '..', 'downloads')
 
@@ -75,6 +76,7 @@ const classTopics = async (classStudent, storage, telegram) => {
               fs.unlink(filepath, (err) => {
                 if (err) {
                   console.error(err)
+                  sendLog.sendError(err)
                 }
               })
             }
@@ -111,6 +113,7 @@ const classTopics = async (classStudent, storage, telegram) => {
             }
           } catch (err) {
             console.log(err)
+            sendLog.sendError(err)
           }
         } else if (attachment.src && data[classStudent.id][topicIndex].attachments.indexOf(attachment.src) === -1) {
           try {
@@ -127,11 +130,13 @@ const classTopics = async (classStudent, storage, telegram) => {
             }
           } catch (err) {
             console.log(err)
+            sendLog.sendError(err)
           }
         }
       }
     } catch (err) {
       console.log(err)
+      sendLog.sendError(err)
     }
   }
 }

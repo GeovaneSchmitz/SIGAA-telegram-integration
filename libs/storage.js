@@ -1,12 +1,16 @@
 const path = require('path')
 const fs = require('fs')
+const sendLog = require('./sendLog')
 const storageDataFilename = path.join(__dirname, '..', '.data/', 'data.json')
 let data
 const storage = {}
 
 const writeData = () => {
   fs.writeFile(storageDataFilename, JSON.stringify(data), function (err) {
-    if (err) console.log(err)
+    if (err) {
+      console.error(err)
+      sendLog.sendError(err)
+    }
   })
 }
 
