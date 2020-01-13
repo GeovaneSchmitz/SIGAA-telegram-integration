@@ -17,7 +17,7 @@ textUtils.toTitleCase = textInput => {
   })
 }
 const wordTitleCase = word => {
-  const wordsLowerCase = ['DA', 'DAS', 'DE', 'DO', 'DOS', 'E']
+  const wordsLowerCase = ['DA', 'DAS', 'DE', 'DO', 'DOS', 'E', 'EM']
   const wordsUpperCase = [
     'PI',
     'I',
