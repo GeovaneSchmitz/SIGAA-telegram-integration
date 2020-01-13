@@ -2,14 +2,95 @@ const config = require('../config')
 
 const textUtils = {}
 textUtils.getPrettyClassName = (className) => {
-  return config.classnames[className] || className
+  return config.classnames[className] || textUtils.toClassTitleCase(className)
 }
-textUtils.toTitleCase = (str) => {
-  return str.replace(/\w\S*/g, (txt) => {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+textUtils.toTitleCase = textInput => {
+  const str = textInput.toUpperCase()
+
+  return str.replace(/\w\S*/g, word => {
+    const textParentheses = word.split(')')
+    if (textParentheses.length === 2) {
+      return wordTitleCase(textParentheses[0]) + ')'
+    } else {
+      return wordTitleCase(textParentheses[0])
+    }
   })
 }
+const wordTitleCase = word => {
+  const wordsLowerCase = ['DA', 'DAS', 'DE', 'DO', 'DOS', 'E']
+  const wordsUpperCase = [
+    'PI',
+    'I',
+    'II',
+    'III',
+    'IV',
+    'V',
+    'VI',
+    'VII',
+    'VIII',
+    'IX',
+    'X',
+    'XI',
+    'XII',
+    'XIII',
+    'XIV',
+    'XV',
+    'XVI',
+    'XVII',
+    'XVIII',
+    'XIX',
+    'XX'
+  ]
+  return word
+    .split('-')
+    .map((word, index) => {
+      if (wordsLowerCase.includes(word)) {
+        return word.toLowerCase()
+      }
+      if (wordsUpperCase.includes(word)) {
+        return word
+      }
+      if (index === 0) {
+        return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase()
+      } else {
+        return word.toLowerCase()
+      }
+    })
+    .join('-')
+}
 
+function createNumRoman (num) {
+  var lookup = {
+    M: 1000,
+    CM: 900,
+    D: 500,
+    CD: 400,
+    C: 100,
+    XC: 90,
+    L: 50,
+    XL: 40,
+    X: 10,
+    IX: 9,
+    V: 5,
+    IV: 4,
+    I: 1
+  }
+  var roman = ''
+  var i
+  for (i in lookup) {
+    while (num >= lookup[i]) {
+      roman += i
+      num -= lookup[i]
+    }
+  }
+  return roman
+}
+textUtils.toClassTitleCase = textInput => {
+  const text = textUtils.toTitleCase(textInput)
+  return text.replace(/[0-9]*/g, number => {
+    return createNumRoman(parseInt(number, 10))
+  })
+}
 textUtils.createDateString = (date) => {
   const day = '0' + date.getDate()
   const month = '0' + (date.getMonth() + 1)
