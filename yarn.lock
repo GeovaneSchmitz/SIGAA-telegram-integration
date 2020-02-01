@@ -1159,9 +1159,9 @@ shebang-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
   integrity sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
 
-sigaa-api@GeovaneSchmitz/SIGAA-node-interface#60e90459812ab29b6cb69648ea8f72052cab8456:
+sigaa-api@GeovaneSchmitz/SIGAA-node-interface#b20e2d0b7272e32283d18a95845edf6063867e9a:
   version "0.1.0"
-  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/60e90459812ab29b6cb69648ea8f72052cab8456"
+  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/b20e2d0b7272e32283d18a95845edf6063867e9a"
   dependencies:
     cheerio "^1.0.0-rc.3"
     he "^1.2.0"
