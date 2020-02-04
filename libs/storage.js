@@ -8,8 +8,7 @@ const storage = {}
 const writeData = () => {
   fs.writeFile(storageDataFilename, JSON.stringify(data), function (err) {
     if (err) {
-      console.error(err)
-      sendLog.sendError(err)
+      sendLog.error(err)
     }
   })
 }

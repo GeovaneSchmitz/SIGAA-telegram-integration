@@ -75,8 +75,7 @@ const classTopics = async (classStudent, storage, telegram) => {
               storage.saveData('topics', data)
               fs.unlink(filepath, (err) => {
                 if (err) {
-                  console.error(err)
-                  sendLog.sendError(err)
+                  sendLog.error(err)
                 }
               })
             }
@@ -112,8 +111,7 @@ const classTopics = async (classStudent, storage, telegram) => {
               storage.saveData('topics', data)
             }
           } catch (err) {
-            console.log(err)
-            sendLog.sendError(err)
+            sendLog.error(err)
           }
         } else if (attachment.src && data[classStudent.id][topicIndex].attachments.indexOf(attachment.src) === -1) {
           try {
@@ -129,14 +127,12 @@ const classTopics = async (classStudent, storage, telegram) => {
               storage.saveData('topics', data)
             }
           } catch (err) {
-            console.log(err)
-            sendLog.sendError(err)
+            sendLog.error(err)
           }
         }
       }
     } catch (err) {
-      console.log(err)
-      sendLog.sendError(err)
+      sendLog.error(err)
     }
   }
 }

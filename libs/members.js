@@ -3,7 +3,7 @@ const config = require('../config')
 const sendLog = require('./sendLog')
 
 async function classTeacherMembers (storage) {
-  console.log('loading teacher members')
+  sendLog.log('Loading teacher members', { sendToTelegram: false })
   const sigaa = new Sigaa({
     url: config.sigaa.url
   })
@@ -18,12 +18,11 @@ async function classTeacherMembers (storage) {
         teachers: members.teachers
       })
     } catch (err) {
-      console.error(err)
-      sendLog.sendError(err)
+      sendLog.error(err)
     }
   }
   storage.saveData('members', data)
-  console.log('finished loading teacher members')
+  sendLog.log('Finished loading teacher members', { sendToTelegram: false })
 }
 
 module.exports = classTeacherMembers

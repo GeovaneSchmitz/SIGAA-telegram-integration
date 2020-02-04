@@ -23,8 +23,7 @@ async function classNews (classStudent, storage, telegram) {
       data[classStudent.id].push(news.id)
       storage.saveData('news', data)
     } catch (err) {
-      console.error(err)
-      sendLog.sendError(err)
+      sendLog.error(err)
     }
   }
 }

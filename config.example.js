@@ -56,14 +56,13 @@ module.exports = {
       noResultsMsg: 'Sem resultado' // message sent if no search results
     },
 
-    forceUpdade: {
+    forceUpdate: {
       command: 'atualizar', // command that must be entered without the slash. e.g. /atualizar
       enable: false, // if command is enabled
       allowlistEnable: false, // false for all users or true for user in allowlist
       allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.from.id'
       denyMsg: 'Este comando é restrito', // message sent if user not in allowlist, if string is empty nothing is sent
       startMsg: 'Buscando por novos conteúdos', // message sent as feedback after type the command
-      isInProgressMsg: 'Já está em progresso', // message sent if bot was already updating
       endMsg: 'Finalizado' // message sent after finishing updating
     },
 

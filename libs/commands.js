@@ -84,22 +84,18 @@ const emailSearchCommand = () => {
   })
 }
 
-const forceUpdadeCommand = () => {
-  const forceUpdateConfig = config.commands.forceUpdade
+const forceUpdateCommand = () => {
+  const forceUpdateConfig = config.commands.forceUpdate
   accessControlAllowlist(forceUpdateConfig)
   bot.command(forceUpdateConfig.command, async (ctx) => {
     if (forceUpdateConfig.startMsg) {
       ctx.reply(forceUpdateConfig.startMsg)
     }
-    getUpdate().then(state => {
-      if (state) {
-        if (forceUpdateConfig.endMsg) {
-          ctx.reply(forceUpdateConfig.endMsg)
-        }
-      } else {
-        if (forceUpdateConfig.isInProgressMsg) {
-          ctx.reply(forceUpdateConfig.isInProgressMsg)
-        }
+    getUpdate({
+      sendLogToTelegram: true
+    }).finally(() => {
+      if (forceUpdateConfig.endMsg) {
+        ctx.reply(forceUpdateConfig.endMsg)
       }
     })
   })
@@ -173,8 +169,7 @@ const accessControlAllowlist = (config) => {
         if (config.denyMsg) {
           ctx.reply(config.denyMsg)
           const msg = `Command /${config.command} denied access for user ${ctx.message.from.username}, add ${ctx.message.from.id} to allow the user`
-          console.log(`INFO: ${msg}`)
-          sendLog.sendInfo(msg)
+          sendLog.info(msg)
         }
       }
     })
@@ -244,8 +239,8 @@ if (config.commands.emailSearch.enable) {
 if (config.commands.calendarSearch.enable) {
   calendarSearchCommand()
 }
-if (config.commands.forceUpdade.enable) {
-  forceUpdadeCommand()
+if (config.commands.forceUpdate.enable) {
+  forceUpdateCommand()
 }
 if (config.commands.viewGrades.enable) {
   viewGradesCommand()
