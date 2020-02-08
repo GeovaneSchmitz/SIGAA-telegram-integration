@@ -33,7 +33,6 @@ const importDataCommand = () => {
       try {
         importDataChats.splice(chatIndex, 1)
         if (!ctx.message.document) {
-          console.log(ctx.message.text)
           if (ctx.message.text === '/' + importConfig.commandCancel) {
             if (importConfig.invalidMsg) {
               await ctx.reply(importConfig.cancelMsg)
@@ -53,7 +52,9 @@ const importDataCommand = () => {
           const fileBuffer = await httpGetRequest(link)
           try {
             const data = JSON.parse(fileBuffer)
-            await storage.updateData(data)
+            const lockWrite = Date.now()
+            storage.lockWrite(lockWrite)
+            await storage.updateData(data, lockWrite)
             if (importConfig.invalidFileMsg) {
               await ctx.reply(importConfig.successfulMsg)
             } else {
