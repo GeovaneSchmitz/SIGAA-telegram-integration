@@ -1,12 +1,15 @@
+const path = require('path')
+const Telegram = require('telegraf/telegram')
 const Telegraf = require('telegraf')
 const Sigaa = require('sigaa-api')
 const textUtils = require('./textUtils')
 const storage = require('./storage')
 const config = require('../config')
 const getUpdate = require('./getUpdate')
+const https = require('https')
 const sendLog = require('./sendLog')
-
 const bot = new Telegraf(process.env.BOT_TOKEN)
+const importDataChats = []
 
 const startCommand = () => {
   const startConfig = config.commands.start
@@ -18,6 +21,90 @@ const startCommand = () => {
   })
 }
 
+const importDataCommand = () => {
+  const importConfig = config.commands.importData
+  accessControlAllowlist(importConfig)
+  bot.on('message', async (ctx, next) => {
+    const chat = ctx.chat
+    const chatIndex = importDataChats.findIndex(chatId => {
+      return chatId === chat.id
+    })
+    if (chatIndex > -1) {
+      try {
+        importDataChats.splice(chatIndex, 1)
+        if (!ctx.message.document) {
+          if (importConfig.invalidMsg) {
+            await ctx.reply(importConfig.invalidMsg)
+          } else {
+            throw Error('IMPORT_DATA_INVALID_MSG_NOT_FOUND')
+          }
+        } else {
+          const telegram = new Telegram(process.env.BOT_TOKEN)
+          const link = await telegram.getFileLink(ctx.message.document['file_id'])
+          const fileBuffer = await httpGetRequest(link)
+          try {
+            const data = JSON.parse(fileBuffer)
+            await storage.updateData(data)
+            if (importConfig.invalidFileMsg) {
+              await ctx.reply(importConfig.successfulMsg)
+            } else {
+              throw Error('IMPORT_DATA_INVALID_SUCCESSFUL_MSG_NOT_FOUND')
+            }
+            process.exit()
+          } catch (err) {
+            importDataChats.push(ctx.chat.id)
+            if (importConfig.invalidFileMsg) {
+              await ctx.reply(importConfig.invalidFileMsg)
+            } else {
+              throw Error('IMPORT_DATA_INVALID_FILE_MSG_NOT_FOUND')
+            }
+          }
+        }
+      } catch (err) {
+        sendLog.error(err)
+      }
+    }
+    next()
+  })
+  bot.command(importConfig.command, (ctx) => {
+    try {
+      const chat = ctx.chat
+      if (chat.type === 'private') {
+        importDataChats.push(
+          chat.id
+        )
+        if (importConfig.fileMsg) {
+          ctx.reply(importConfig.fileMsg)
+        }
+      } else {
+        ctx.reply(importConfig.groupDenyMsg)
+      }
+    } catch (err) {
+      sendLog.error(err)
+    }
+  })
+}
+const exportDataCommand = () => {
+  const exportCommandConfig = config.commands.exportData
+  accessControlAllowlist(exportCommandConfig)
+  bot.command(exportCommandConfig.command, async (ctx) => {
+    try {
+      if (ctx.chat.type === 'private') {
+        await ctx.replyWithDocument({
+          source: path.join(__dirname, '../.data/data.json')
+        })
+      } else {
+        if (exportCommandConfig.groupDenyMsg) {
+          await ctx.reply(exportCommandConfig.groupDenyMsg)
+        } else {
+          throw Error('EXPORT_DATA_GROUP_DENY_MSG_NOT_FOUND')
+        }
+      }
+    } catch (err) {
+      sendLog.error(err)
+    }
+  })
+}
 const calendarSearchCommand = () => {
   const calendarSearchConfig = config.commands.calendarSearch
   accessControlAllowlist(calendarSearchConfig)
@@ -230,6 +317,14 @@ const searchTeacherByName = async (searchTerm) => {
   }
 }
 
+if (config.commands.exportData.enable) {
+  exportDataCommand()
+}
+
+if (config.commands.importData.enable) {
+  importDataCommand()
+}
+
 if (config.commands.start.enable) {
   startCommand()
 }
@@ -245,4 +340,42 @@ if (config.commands.forceUpdate.enable) {
 if (config.commands.viewGrades.enable) {
   viewGradesCommand()
 }
+
 bot.launch()
+function httpGetRequest (link) {
+  const url = new URL(link)
+  const options = {
+    hostname: url.hostname,
+    port: 443,
+    path: url.pathname + url.search,
+    method: 'GET',
+    headers: {
+      'User-Agent': 'Telegram bot'
+    }
+  }
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, (response) => {
+      switch (response.statusCode) {
+        case 200:
+          try {
+            const chunks = []
+            response.on('data', (chunk) => {
+              chunks.push(Buffer.from(chunk, 'binary'))
+            })
+            response.on('error', (err) => {
+              reject(err)
+            })
+            response.on('end', () => {
+              resolve(Buffer.concat(chunks))
+            })
+          } catch (err) {
+            reject(err)
+          }
+          break
+        default:
+          reject(new Error(`INVALID_STATUSCODE_${response.statusCode}`))
+      }
+    })
+    req.end()
+  })
+}

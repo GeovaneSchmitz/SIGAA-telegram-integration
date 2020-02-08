@@ -6,10 +6,15 @@ let data
 const storage = {}
 
 const writeData = () => {
-  fs.writeFile(storageDataFilename, JSON.stringify(data), function (err) {
-    if (err) {
-      sendLog.error(err)
-    }
+  return new Promise((resolve, reject) => {
+    fs.writeFile(storageDataFilename, JSON.stringify(data), function (err) {
+      if (err) {
+        sendLog.error(err)
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
   })
 }
 
@@ -21,9 +26,14 @@ try {
   writeData()
 }
 
+storage.updateData = (newData) => {
+  data = newData
+  return writeData()
+}
+
 storage.saveData = (field, value) => {
   data[field] = value
-  writeData()
+  return writeData()
 }
 storage.getData = (field) => {
   if (data[field] === undefined) {

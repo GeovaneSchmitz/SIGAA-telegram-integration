@@ -73,6 +73,28 @@ module.exports = {
       allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.from.id'
       denyMsg: 'Este comando é restrito', // message sent if user not in allowlist, if string is empty nothing is sent
       noResultsMsg: 'Sem resultado' // message sent if no search results
+    },
+    importData: {
+      command: 'importData', // command that must be entered without the slash. e.g. /importData
+      commandCancel: 'cancel', // command for cancel that must be entered without the slash. e.g. /cancel
+      enable: false, // if command is enabled
+      allowlistEnable: true, // false for all users or true for user in allowlist
+      allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.from.id'
+      denyMsg: 'Este comando é restrito', // message sent if user not in allowlist, if string is empty nothing is sent
+      fileMsg: 'Envie um arquivo json com histórico ou /cancel para cancelar a operação', // message sent after importData command
+      invalidMsg: 'Messagem invalida, importData cancelado', // message sent if is a text msg
+      groupDenyMsg: 'Por segurança, este comando só pode ser executado em chat privado', // message denying if received from a group
+      invalidFileMsg: 'Arquivo invalido', // message sent if is a invalid file
+      successfulMsg: 'Arquivo data atualizado com sucesso', // message sent if the operation is successful
+      cancelMsg: 'Operação cancelada' // message sent if the operation is canceled
+    },
+    exportData: {
+      command: 'exportData', // command that must be entered without the slash. e.g. /exportData
+      enable: false, // if command is enabled
+      allowlistEnable: true, // false for all users or true for user in allowlist
+      allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.from.id'
+      groupDenyMsg: 'Por segurança, este comando só pode ser executado em chat privado', // message denying if received from a group
+      denyMsg: 'Este comando é restrito' // message sent if user not in allowlist, if string is empty nothing is sent
     }
   }
 }
