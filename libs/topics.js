@@ -30,7 +30,7 @@ const classTopics = async (classStudent, storage, telegram) => {
         let msg = `${textUtils.getPrettyClassName(classStudent.title)}\n`
         msg += `${topic.title}\n`
         if (topic.contentText !== '') msg += `${topic.contentText}\n`
-        msg += `${date}`
+        msg += date
         for (const chatID of config.notifications.chatIDs) {
           await telegram.sendMessage(chatID, msg)
         }
@@ -102,8 +102,18 @@ const classTopics = async (classStudent, storage, telegram) => {
               storage.saveData('topics', data)
             }
             if (attachment.type === 'webcontent') {
-              let msg = `${attachment.title}\n`
-              msg += `${await attachment.getDescription()}\n`
+              const msgArray = [attachment.title]
+              if (attachment.description) {
+                msgArray.push(attachment.description)
+              }
+              const content = await attachment.getContent()
+              const date = await attachment.getDate()
+              const dateString = textUtils.createDateString(date)
+
+              msgArray.push(content)
+              msgArray.push(dateString)
+
+              const msg = msgArray.join('\n')
               for (const chatID of config.notifications.chatIDs) {
                 await telegram.sendMessage(chatID, msg)
               }
