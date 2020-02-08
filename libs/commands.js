@@ -33,10 +33,19 @@ const importDataCommand = () => {
       try {
         importDataChats.splice(chatIndex, 1)
         if (!ctx.message.document) {
-          if (importConfig.invalidMsg) {
-            await ctx.reply(importConfig.invalidMsg)
+          console.log(ctx.message.text)
+          if (ctx.message.text === '/' + importConfig.commandCancel) {
+            if (importConfig.invalidMsg) {
+              await ctx.reply(importConfig.cancelMsg)
+            } else {
+              throw Error('IMPORT_DATA_CANCEL_MSG_NOT_FOUND')
+            }
           } else {
-            throw Error('IMPORT_DATA_INVALID_MSG_NOT_FOUND')
+            if (importConfig.invalidMsg) {
+              await ctx.reply(importConfig.invalidMsg)
+            } else {
+              throw Error('IMPORT_DATA_INVALID_MSG_NOT_FOUND')
+            }
           }
         } else {
           const telegram = new Telegram(process.env.BOT_TOKEN)
