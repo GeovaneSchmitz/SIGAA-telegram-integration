@@ -1,9 +1,10 @@
 const Sigaa = require('sigaa-api')
 const config = require('../config')
 const sendLog = require('./sendLog')
+const storage = require('./storage')
 
-async function classTeacherMembers (storage) {
-  sendLog.log('Loading teacher members', { sendToTelegram: false })
+async function classMembers () {
+  sendLog.log('Loading members', { sendToTelegram: false })
   const sigaa = new Sigaa({
     url: config.sigaa.url
   })
@@ -15,14 +16,15 @@ async function classTeacherMembers (storage) {
       var members = await classStudent.getMembers() // this lists all members
       data.push({
         className: classStudent.title,
-        teachers: members.teachers
+        teachers: members.teachers,
+        classId: classStudent.id
       })
     } catch (err) {
       sendLog.error(err)
     }
   }
   storage.saveData('members', data)
-  sendLog.log('Finished loading teacher members', { sendToTelegram: false })
+  sendLog.log('Finished loading members', { sendToTelegram: false })
 }
 
-module.exports = classTeacherMembers
+module.exports = classMembers

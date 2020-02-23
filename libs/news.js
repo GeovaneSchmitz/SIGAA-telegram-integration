@@ -1,8 +1,9 @@
 const textUtils = require('./textUtils')
 const config = require('../config')
 const sendLog = require('./sendLog')
+const storage = require('./storage')
 
-async function classNews (classStudent, storage, telegram) {
+async function classNews (classStudent, telegram) {
   const data = storage.getData('news')
   var newsList = await classStudent.getNews() // this lists all news
   if (!data[classStudent.id]) data[classStudent.id] = []

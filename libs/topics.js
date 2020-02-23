@@ -3,10 +3,15 @@ const textUtils = require('./textUtils')
 const fs = require('fs')
 const config = require('../config')
 const sendLog = require('./sendLog')
+const storage = require('./storage')
 
 const BaseDestiny = path.join(__dirname, '..', 'downloads')
 
-const classTopics = async (classStudent, storage, telegram) => {
+fs.mkdir(BaseDestiny, (err) => {
+  if (err && err.code !== 'EEXIST') throw new Error('up')
+})
+
+const classTopics = async (classStudent, telegram) => {
   const data = storage.getData('topics')
   var topics = await classStudent.getTopics() // this lists all topics
   if (!data[classStudent.id]) data[classStudent.id] = []

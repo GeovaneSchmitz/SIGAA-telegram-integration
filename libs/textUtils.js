@@ -16,6 +16,10 @@ textUtils.toTitleCase = textInput => {
     }
   })
 }
+textUtils.capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 const wordTitleCase = word => {
   const wordsLowerCase = ['DA', 'DAS', 'DE', 'DO', 'DOS', 'E', 'EM']
   const wordsUpperCase = [
@@ -91,15 +95,17 @@ textUtils.toClassTitleCase = textInput => {
     return createNumRoman(parseInt(number, 10))
   })
 }
-textUtils.createDateString = (date) => {
+
+textUtils.createDateString = (date, options) => {
   const day = '0' + date.getDate()
   const month = '0' + (date.getMonth() + 1)
   const year = date.getFullYear().toString()
   let dateString
-  if (date.getFullYear() === new Date().getFullYear()) {
-    dateString = `${day.substr(-2)}/${month.substr(-2)}`
-  } else {
+  const optionYear = options ? (options.year === undefined ? null : options.year) : null
+  if (optionYear || (optionYear === null && date.getFullYear() !== new Date().getFullYear())) {
     dateString = `${day.substr(-2)}/${month.substr(-2)}/${year.substr(-2)}`
+  } else {
+    dateString = `${day.substr(-2)}/${month.substr(-2)}`
   }
   if (date.getHours() !== 0 || date.getMinutes() !== 0) {
     dateString += ` às ${createTime(date)}`
@@ -107,11 +113,11 @@ textUtils.createDateString = (date) => {
   return dateString
 }
 
-textUtils.createDatesString = (startDate, endDate) => {
+textUtils.createDatesString = (startDate, endDate, options) => {
   if (startDate.valueOf() === endDate.valueOf()) {
-    return textUtils.createDateString(startDate)
+    return textUtils.createDateString(startDate, options)
   } else {
-    return `${textUtils.createDateString(startDate)} - ${textUtils.createDateString(endDate)}`
+    return `${textUtils.createDateString(startDate, options)} - ${textUtils.createDateString(endDate, options)}`
   }
 }
 

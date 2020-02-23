@@ -32,6 +32,8 @@ module.exports = {
       denyMsg: '', // message sent if user not in allowlist, if string is empty nothing is sent
       startMsg: '/agenda <termo de busca> - Lista as agendas dos Professores correspondente\n' +
       '/email <termo de busca> - Lista os email dos Professores correspondentes\n' +
+      '/atendimento <termo de busca> - Mostra os atendimento dos Professores correspondentes\n' +
+      '/plano <termo de busca> - Retorna plano de ensino das unidade curricular correspondentes\n' +
       'É exibido somente os 5 primeiros resultados' // message sent after / start
     },
 
@@ -43,8 +45,11 @@ module.exports = {
       denyMsg: '', // message sent if user not in allowlist, if string is empty nothing is sent
       maxResultAmount: 5, // limit result amount
       calendarUnavailableMsg: 'Agenda indisponível', // message sent if calendar is unavailable
-      noResultsMsg: 'Sem resultado' // message sent if no search results
+      tooManyResultsMsg: 'Enviado apenas os primeiros resultados, refine seu termo de pesquisa se necessário', // message sent if the result was limited by the amount
+      noResultsMsg: 'Sem resultado', // message sent if no search results
+      attendanceScheduleTip: 'Se você estiver procurando pelo atendimento, talvez /atendimento pode ser útil' // message sent at the end
     },
+
     emailSearch: {
       command: 'email', // command that must be entered without the slash with search term. e.g. /email bob
       enable: true, // if command is enabled
@@ -53,6 +58,7 @@ module.exports = {
       denyMsg: '', // message sent if user not in allowlist, if string is empty nothing is sent
       maxResultAmount: 5, // limit result amount
       emailUnavailableMsg: 'E-Mail indisponível', // message sent if E-Mail is unavailable
+      tooManyResultsMsg: 'Enviado apenas os primeiros resultados, refine seu termo de pesquisa se necessário', // message sent if the result was limited by the amount
       noResultsMsg: 'Sem resultado' // message sent if no search results
     },
 
@@ -71,9 +77,10 @@ module.exports = {
       enable: true, // if command is enabled
       allowlistEnable: true, // false for all users or true for user in allowlist
       allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.from.id'
-      denyMsg: 'Este comando é restrito', // message sent if user not in allowlist, if string is empty nothing is sent
+      denyMsg: 'Este comando é restrito a chats específicos', // message sent if user not in allowlist, if string is empty nothing is sent
       noResultsMsg: 'Sem resultado' // message sent if no search results
     },
+
     importData: {
       command: 'importData', // command that must be entered without the slash. e.g. /importData
       commandCancel: 'cancel', // command for cancel that must be entered without the slash. e.g. /cancel
@@ -88,13 +95,37 @@ module.exports = {
       successfulMsg: 'Arquivo data atualizado com sucesso', // message sent if the operation is successful
       cancelMsg: 'Operação cancelada' // message sent if the operation is canceled
     },
+
     exportData: {
       command: 'exportData', // command that must be entered without the slash. e.g. /exportData
       enable: false, // if command is enabled
       allowlistEnable: true, // false for all users or true for user in allowlist
       allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.from.id'
       groupDenyMsg: 'Por segurança, este comando só pode ser executado em chat privado', // message denying if received from a group
-      denyMsg: 'Este comando é restrito' // message sent if user not in allowlist, if string is empty nothing is sent
+      denyMsg: 'Este comando é restrito a chats específicos' // message sent if user not in allowlist, if string is empty nothing is sent
+    },
+
+    educationalPlan: {
+      command: 'plano', // command that must be entered without the slash. e.g. /plano
+      enable: false, // if command is enabled
+      allowlistEnable: true, // false for all users or true for user in allowlist
+      allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.chat.id'
+      maxResultAmount: 5, // limit result amount
+      tooManyResultsMsg: 'Enviado apenas os primeiros resultados, refine seu termo de pesquisa se necessário', // message sent if the result was limited by the amount
+      denyMsg: 'Este comando é restrito a chats específicos', // message sent if user not in allowlist, if string is empty nothing is sent
+      noResultsMsg: 'Sem resultado, a unidade curricular ou professor não tem um plano de ensino cadastrado' // message sent if no search results
+    },
+
+    attendanceSchedule: {
+      command: 'atendimento', // command that must be entered without the slash. e.g. /atualizar
+      enable: false, // if command is enabled
+      allowlistEnable: true, // false for all users or true for user in allowlist
+      allowlist: [], // array with userId allowed, userId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.chat.id'
+      denyMsg: 'Este comando é restrito a chats específicos', // message sent if user not in allowlist, if string is empty nothing is sent
+      maxResultAmount: 5, // limit result amount
+      tooManyResultsMsg: 'Enviado apenas os primeiros resultados, refine seu termo de pesquisa se necessário', // message sent if the result was limited by the amount
+      noResultsMsg: 'Sem resultado, a unidade curricular ou professor não tem um atendimento cadastrado. Você pode conseguir encontrar na agenda usando /agenda', // message sent if no search results
+      moreThanOneTeacherInClassObservation: 'Talvez este atendimento, é só para um dos professores' // message sent if there is more than one teacher in the class
     }
   }
 }

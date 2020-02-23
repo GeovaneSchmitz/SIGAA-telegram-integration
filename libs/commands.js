@@ -5,6 +5,7 @@ const Sigaa = require('sigaa-api')
 const textUtils = require('./textUtils')
 const storage = require('./storage')
 const config = require('../config')
+const educationalPlan = require('./educationalPlan')
 const getUpdate = require('./getUpdate')
 const https = require('https')
 const sendLog = require('./sendLog')
@@ -124,7 +125,7 @@ const calendarSearchCommand = () => {
     let response = ''
     ctx.replyWithChatAction('typing')
     const results = await getTeacher(searchTerm, calendarSearchConfig.maxResultAmount)
-    for (const result of results) {
+    for (const result of results.results) {
       let calendar
       if (result.email !== null) {
         calendar = `https://zimbra.ifsc.edu.br/service/home/${result.email}/atividadesIFSC.html?view=week`
@@ -138,13 +139,21 @@ const calendarSearchCommand = () => {
       response += `${result.department}\n`
       response += `${calendar}\n\n`
     }
+    let msg = ''
     if (response !== '') {
-      ctx.reply(response.slice(0, -2))
+      msg = response.slice(0, -2)
+      if (results.limited && calendarSearchConfig.tooManyResultsMsg) {
+        msg += '\n\n' + calendarSearchConfig.tooManyResultsMsg
+      }
     } else {
       if (calendarSearchConfig.noResultsMsg) {
-        ctx.reply(calendarSearchConfig.noResultsMsg)
+        msg = calendarSearchConfig.noResultsMsg
       }
     }
+    if (calendarSearchConfig.attendanceScheduleTip) {
+      msg += '\n\n' + calendarSearchConfig.attendanceScheduleTip
+    }
+    ctx.reply(msg)
   })
 }
 
@@ -157,7 +166,7 @@ const emailSearchCommand = () => {
     let response = ''
     ctx.replyWithChatAction('typing')
     const results = await getTeacher(searchTerm, emailSearchConfig.maxResultAmount)
-    for (const result of results) {
+    for (const result of results.results) {
       let email
       if (result.email !== null) {
         email = result.email
@@ -172,11 +181,91 @@ const emailSearchCommand = () => {
       response += `${email}\n\n`
     }
     if (response !== '') {
-      ctx.reply(response.slice(0, -2))
+      let msg = response.slice(0, -2)
+      if (results.limited && emailSearchConfig.tooManyResultsMsg) {
+        msg += '\n\n' + emailSearchConfig.tooManyResultsMsg
+      }
+      ctx.reply(msg)
     } else {
       if (emailSearchConfig.noResultsMsg) {
         ctx.reply(emailSearchConfig.noResultsMsg)
       }
+    }
+  })
+}
+const attendanceScheduleCommand = () => {
+  const attendanceScheduleConfig = config.commands.attendanceSchedule
+  accessControlAllowlist(attendanceScheduleConfig)
+  bot.command(attendanceScheduleConfig.command, async (ctx) => {
+    const message = ctx.message
+    const searchTerm = textUtils.removeAccents(message.text.slice(message.text.indexOf(' ') + 1).toLowerCase())
+    const classIds = searchClass(searchTerm)
+    const plans = storage.getData('plans')
+    const teachers = storage.getData('members')
+    const classIdsWithAttendanceSchedule = classIds.filter(classId => {
+      return plans[classId] && plans[classId].plan && plans[classId].plan.attendanceSchedule
+    })
+    const msg = []
+    if (classIdsWithAttendanceSchedule.length > 0) {
+      for (let i = 0; i < classIdsWithAttendanceSchedule.length && i < attendanceScheduleConfig.maxResultAmount; i++) {
+        const classId = classIdsWithAttendanceSchedule[i]
+        const classMsg = []
+        const classTeachers = teachers.find((teachers) => {
+          return teachers.classId === classId
+        })
+
+        const className = textUtils.toClassTitleCase(classTeachers.className)
+        const attendanceSchedule = plans[classId].plan.attendanceSchedule
+        classMsg.push(className)
+        for (const teacher of classTeachers.teachers) {
+          classMsg.push(textUtils.toTitleCase(teacher.name))
+        }
+        if (classTeachers.teachers.length > 1) {
+          if (attendanceScheduleConfig.moreThanOneTeacherInClassObservation) {
+            classMsg.push(attendanceScheduleConfig.moreThanOneTeacherInClassObservation)
+          }
+        }
+        classMsg.push(attendanceSchedule)
+        msg.push(classMsg.join('\n'))
+      }
+      ctx.reply(msg.join('\n\n'))
+      if (classIdsWithAttendanceSchedule.length > attendanceScheduleConfig.maxResultAmount && attendanceScheduleConfig.tooManyResultsMsg) {
+        ctx.reply(attendanceScheduleConfig.tooManyResultsMsg)
+      }
+    } else if (attendanceScheduleConfig.noResultsMsg) {
+      ctx.reply(attendanceScheduleConfig.noResultsMsg)
+    }
+  })
+}
+
+const educationalPlanCommand = () => {
+  const educationalPlanConfig = config.commands.educationalPlan
+  accessControlAllowlist(educationalPlanConfig)
+  bot.command(educationalPlanConfig.command, async (ctx) => {
+    const message = ctx.message
+    const searchTerm = textUtils.removeAccents(message.text.slice(message.text.indexOf(' ') + 1).toLowerCase())
+    const classIds = searchClass(searchTerm)
+    const plans = storage.getData('plans')
+    const classIdsWithPlan = classIds.filter(classId => {
+      return plans[classId].filename
+    })
+    if (classIdsWithPlan.length > 0) {
+      const telegram = new Telegram(process.env.BOT_TOKEN)
+      for (let i = 0; i < classIdsWithPlan.length && i < educationalPlanConfig.maxResultAmount; i++) {
+        const classId = classIdsWithPlan[i]
+
+        ctx.replyWithChatAction('upload_document')
+        try {
+          await educationalPlan.sendDocument(classId, [ctx.chat.id], telegram)
+        } catch (err) {
+          console.log(err)
+        }
+      }
+      if (classIdsWithPlan.length > educationalPlanConfig.maxResultAmount && educationalPlanConfig.tooManyResultsMsg) {
+        ctx.reply(educationalPlanConfig.tooManyResultsMsg)
+      }
+    } else if (educationalPlanConfig.noResultsMsg) {
+      ctx.reply(educationalPlanConfig.noResultsMsg)
     }
   })
 }
@@ -189,7 +278,8 @@ const forceUpdateCommand = () => {
       ctx.reply(forceUpdateConfig.startMsg)
     }
     getUpdate({
-      sendLogToTelegram: true
+      sendLogToTelegram: true,
+      chatId: ctx.chat.id
     }).finally(() => {
       if (forceUpdateConfig.endMsg) {
         ctx.reply(forceUpdateConfig.endMsg)
@@ -260,13 +350,18 @@ const viewGradesCommand = () => {
 const accessControlAllowlist = (config) => {
   if (config.allowlistEnable) {
     bot.command(config.command, (ctx, next) => {
-      if (config.allowlist.indexOf(ctx.message.from.id) > -1) {
+      if (config.allowlist.indexOf(ctx.message.chat.id) > -1) {
         next()
       } else {
         if (config.denyMsg) {
           ctx.reply(config.denyMsg)
-          const msg = `Command /${config.command} denied access for user ${ctx.message.from.username}, add ${ctx.message.from.id} to allow the user`
-          sendLog.info(msg)
+          if (ctx.chat.type === 'private') {
+            const msg = `Command /${config.command} denied access for user ${ctx.message.from.username} in private chat, add ${ctx.message.chat.id} to allow the user`
+            sendLog.info(msg)
+          } else {
+            const msg = `Command /${config.command} denied access for user ${ctx.message.from.username} in ${ctx.chat.title} ${ctx.chat.type}, add ${ctx.message.chat.id} to allow the ${ctx.chat.type}`
+            sendLog.info(msg)
+          }
         }
       }
     })
@@ -276,7 +371,12 @@ const accessControlAllowlist = (config) => {
 const getTeacher = async (searchTerm, limitResult = 5) => {
   const results = searchTeacherByClassName(searchTerm)
   const teacherNameResults = await searchTeacherByName(searchTerm)
-  for (let i = results.length; i < limitResult && i < teacherNameResults.length; i++) {
+  let limited = false
+  for (let i = 0; i < teacherNameResults.length; i++) {
+    if (results.length >= limitResult) {
+      limited = true
+      break
+    }
     const name = teacherNameResults[i].name
     const department = teacherNameResults[i].department
     const email = await teacherNameResults[i].getEmail()
@@ -287,7 +387,15 @@ const getTeacher = async (searchTerm, limitResult = 5) => {
       email
     })
   }
-  return results
+  const resultLimited = results.filter((value, index) => {
+    if (limitResult > index) {
+      limited = true
+      return true
+    } else {
+      return false
+    }
+  })
+  return { results: resultLimited, limited }
 }
 
 const searchTeacherByClassName = (searchTerm) => {
@@ -308,6 +416,28 @@ const searchTeacherByClassName = (searchTerm) => {
           department,
           email
         })
+      }
+    }
+  }
+  return results
+}
+
+const searchClass = (searchTerm) => {
+  const results = []
+  const teacherMembersClasses = storage.getData('members')
+  for (const teacherMembers of teacherMembersClasses) {
+    const className = textUtils.removeAccents(teacherMembers.className.toLowerCase())
+    const classNamePretty = textUtils.removeAccents(textUtils.getPrettyClassName(teacherMembers.className).toLowerCase())
+    if (className.indexOf(searchTerm) > -1 || classNamePretty.indexOf(searchTerm) > -1) {
+      results.push(teacherMembers.classId)
+      continue
+    }
+    for (const teacher of teacherMembers.teachers) {
+      const username = textUtils.removeAccents(teacher.username.toLowerCase())
+      const name = textUtils.removeAccents(teacher.name.toLowerCase())
+      if (name.indexOf(searchTerm) > -1 || username.indexOf(searchTerm) > -1) {
+        results.push(teacherMembers.classId)
+        break
       }
     }
   }
@@ -347,10 +477,15 @@ if (config.commands.calendarSearch.enable) {
 if (config.commands.forceUpdate.enable) {
   forceUpdateCommand()
 }
+if (config.commands.attendanceSchedule.enable) {
+  attendanceScheduleCommand()
+}
 if (config.commands.viewGrades.enable) {
   viewGradesCommand()
 }
-
+if (config.commands.educationalPlan.enable) {
+  educationalPlanCommand()
+}
 bot.launch()
 function httpGetRequest (link) {
   const url = new URL(link)

@@ -1,7 +1,8 @@
 const textUtils = require('./textUtils')
 const config = require('../config')
+const storage = require('./storage')
 
-async function classGrades (classStudent, storage, telegram) {
+async function classGrades (classStudent, telegram) {
   const data = storage.getData('grades')
   const grades = await classStudent.getGrades()
   if (!data[classStudent.id]) {

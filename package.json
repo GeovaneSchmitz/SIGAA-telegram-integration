@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "dotenv": "^8.1.0",
-    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#34d1ce92cdf2ba74974f802c5d5850bfff920832",
+    "escape-latex": "^1.2.0",
+    "mustache": "^4.0.0",
+    "node-latex": "^2.6.3",
+    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#ccf9a52682648e35398dfdc55aceb1b407681ded",
     "telegraf": "^3.32.0"
   },
   "devDependencies": {

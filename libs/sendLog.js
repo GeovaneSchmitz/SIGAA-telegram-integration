@@ -5,20 +5,24 @@ const telegram = new Telegram(process.env.BOT_TOKEN)
 
 const sendLog = {}
 
-sendLog._sendToTelegram = async (msg) => {
-  for (const chatID of config.logs.chatIDs) {
-    try {
-      await telegram.sendMessage(chatID, msg)
-    } catch (err) {
-      console.error(err)
+sendLog._sendToTelegram = async (msg, chatId) => {
+  if (chatId) {
+    await telegram.sendMessage(chatId, msg)
+  } else {
+    for (const chatId of config.logs.chatIDs) {
+      try {
+        await telegram.sendMessage(chatId, msg)
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 }
 
-sendLog.log = async (msg, { sendToTelegram } = {}) => {
+sendLog.log = async (msg, { sendToTelegram, chatId } = {}) => {
   console.log(msg)
   if (sendToTelegram !== false) {
-    sendLog._sendToTelegram(msg)
+    sendLog._sendToTelegram(msg, chatId)
   }
 }
 sendLog.error = async (err, { sendToTelegram } = {}) => {

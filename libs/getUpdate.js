@@ -6,9 +6,9 @@ const grades = require('./grades')
 const news = require('./news')
 const topics = require('./topics')
 const members = require('./members')
+const educationalPlan = require('./educationalPlan')
 
 const config = require('../config')
-const storage = require('./storage')
 const textUtils = require('./textUtils')
 const sendLog = require('./sendLog')
 const calcTime = (endTime, startTime, label) => {
@@ -25,7 +25,7 @@ const calcTime = (endTime, startTime, label) => {
     return `> ${label}: Error`
   }
 }
-const getUpdateMsg = async ({ sendToTelegram } = {}) => {
+const getUpdateMsg = async ({ sendToTelegram, chatId } = {}) => {
   try {
     const telegram = new Telegram(process.env.BOT_TOKEN)
     const sigaa = new Sigaa({
@@ -36,24 +36,31 @@ const getUpdateMsg = async ({ sendToTelegram } = {}) => {
     for (const classStudent of classes) { // for each class
       const classStartTime = Date.now()
 
-      const topicsPromise = topics(classStudent, storage, telegram)
+      const topicsPromise = topics(classStudent, telegram)
         .then(() => Date.now())
         .catch((error) => sendLog.error(error))
-      const newsPromise = news(classStudent, storage, telegram)
+
+      const newsPromise = news(classStudent, telegram)
         .then(() => Date.now())
         .catch((error) => sendLog.error(error))
-      const gradesPromise = grades(classStudent, storage, telegram)
+
+      const educationalPlanPromise = educationalPlan.educationalPlanNotify(classStudent, telegram)
         .then(() => Date.now())
         .catch((error) => sendLog.error(error))
-      await Promise.all([topicsPromise, newsPromise, gradesPromise])
+
+      const gradesPromise = grades(classStudent, telegram)
+        .then(() => Date.now())
+        .catch((error) => sendLog.error(error))
+
+      await Promise.all([topicsPromise, newsPromise, educationalPlanPromise, gradesPromise])
         .then((times) => {
-          const labels = ['Topics', 'News', 'Grades']
+          const labels = ['Topics', 'News', 'Education Plan', 'Grades']
           const classeTitle = textUtils.getPrettyClassName(classStudent.title)
           const msg = [classeTitle]
           for (let i = 0; i < times.length; i++) {
             msg.push(calcTime(times[i], classStartTime, labels[i]))
           }
-          sendLog.log(msg.join('\n'), { sendToTelegram })
+          sendLog.log(msg.join('\n'), { sendToTelegram, chatId })
         })
     }
   } catch (err) {
@@ -67,9 +74,9 @@ setInterval(() => {
   getUpdateMsg({ sendToTelegram: false })
 }, config.notifications.updateInterval)
 
-members(storage)
+members()
 setInterval(() => {
-  members(storage)
+  members()
 }, config.search.intervalToFetchClassMembers)
 
 module.exports = getUpdateMsg
