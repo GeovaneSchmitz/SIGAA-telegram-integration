@@ -12,18 +12,14 @@ const config = require('../config')
 const textUtils = require('./textUtils')
 const sendLog = require('./sendLog')
 const calcTime = (endTime, startTime, label) => {
-  if (endTime) {
-    const deltaTime = Math.trunc((endTime - startTime) / 1000)
-    let deltaText
-    if (deltaTime >= 60) {
-      deltaText = Math.trunc(deltaTime / 60) + 'min'
-    } else {
-      deltaText = deltaTime + 's'
-    }
-    return `> ${label}: ${deltaText}`
+  const deltaTime = Math.trunc((endTime - startTime) / 1000)
+  let deltaText
+  if (deltaTime >= 60) {
+    deltaText = Math.trunc(deltaTime / 60) + 'min'
   } else {
-    return `> ${label}: Error`
+    deltaText = deltaTime + 's'
   }
+  return `> ${label}: ${deltaText}`
 }
 const getUpdateMsg = async ({ sendToTelegram, chatId } = {}) => {
   try {
@@ -35,33 +31,51 @@ const getUpdateMsg = async ({ sendToTelegram, chatId } = {}) => {
     const classes = await account.getClasses() // this return a array with all classes
     for (const classStudent of classes) { // for each class
       const classStartTime = Date.now()
-
-      const topicsPromise = topics(classStudent, telegram)
-        .then(() => Date.now())
-        .catch((error) => sendLog.error(error))
-
-      const newsPromise = news(classStudent, telegram)
-        .then(() => Date.now())
-        .catch((error) => sendLog.error(error))
-
-      const educationalPlanPromise = educationalPlan.educationalPlanNotify(classStudent, telegram)
-        .then(() => Date.now())
-        .catch((error) => sendLog.error(error))
-
-      const gradesPromise = grades(classStudent, telegram)
-        .then(() => Date.now())
-        .catch((error) => sendLog.error(error))
-
-      await Promise.all([topicsPromise, newsPromise, educationalPlanPromise, gradesPromise])
-        .then((times) => {
-          const labels = ['Topics', 'News', 'Education Plan', 'Grades']
-          const classeTitle = textUtils.getPrettyClassName(classStudent.title)
-          const msg = [classeTitle]
-          for (let i = 0; i < times.length; i++) {
-            msg.push(calcTime(times[i], classStartTime, labels[i]))
-          }
-          sendLog.log(msg.join('\n'), { sendToTelegram, chatId })
-        })
+      const tasks = [
+        { name: 'TopicsAndFiles', label: 'Topics and Files', function: () => topics(classStudent, telegram) },
+        { name: 'news', label: 'News', function: () => news(classStudent, telegram) },
+        { name: 'educationalPlan', label: 'Education Plan', function: () => educationalPlan.educationalPlanNotify(classStudent, telegram) },
+        { name: 'grades', label: 'Grades', function: () => grades(classStudent, telegram) }
+      ]
+      const promises = tasks.map(task => {
+        if (config.notifications[task.name]) {
+          return task.function.call()
+            .then(() => {
+              return {
+                status: 'OK',
+                label: task.label,
+                endTime: Date.now()
+              }
+            })
+            .catch((error) => {
+              sendLog.error(error)
+              return {
+                status: 'Error',
+                label: task.label
+              }
+            })
+        } else {
+          return Promise.resolve({
+            status: 'Disabled',
+            label: task.label
+          })
+        }
+      })
+      const classeTitle = textUtils.getPrettyClassName(classStudent.title)
+      const msg = [classeTitle]
+      msg.push(
+        await Promise.all(promises)
+          .then((promiseResponses) => {
+            return promiseResponses.map(response => {
+              if (response.status === 'ok') {
+                return calcTime(response.endTime, classStartTime, response.label)
+              } else {
+                return `> ${response.label}: ${response.status}`
+              }
+            })
+          })
+      )
+      sendLog.log(msg.join('\n'), { sendToTelegram, chatId })
     }
   } catch (err) {
     sendLog.error(err)

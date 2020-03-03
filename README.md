@@ -14,14 +14,17 @@ Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando We
 * Envio de Arquivo
 * Tarefas
 * Também notifica sobre questionário, vídeos, 'conteúdo da web'
+* Envio do Plano de ensino do SIGAA em formato PDF, necessário ter o LaTeX instalado
  
 ### Comandos
 * Busca de email e agenda de professor
 `/agenda <nome do professor ou da turma>` ou `/email <nome do professor ou da turma>`
+* Buscar atendimento `/atendimento <nome do professor ou da turma>`
 * Ver as notas `/viewgrades` 
 * Forçar atualização `/forceupdate`
- 
+
 ## Para executar:
+* Instalar o LaTeX
 * Instalar o nodejs
 * Instalar as dependências do projeto
 use `npm install` ou `yarn`
