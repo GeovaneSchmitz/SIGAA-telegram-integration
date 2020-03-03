@@ -1,15 +1,7 @@
-const path = require('path')
 const textUtils = require('./textUtils')
-const fs = require('fs')
 const config = require('../config')
 const sendLog = require('./sendLog')
 const storage = require('./storage')
-
-const BaseDestiny = path.join(__dirname, '..', 'downloads')
-
-fs.mkdir(BaseDestiny, (err) => {
-  if (err && err.code !== 'EEXIST') throw new Error('up')
-})
 
 const classTopics = async (classStudent, telegram) => {
   const data = storage.getData('topics')
@@ -49,41 +41,6 @@ const classTopics = async (classStudent, telegram) => {
       for (const attachment of topic.attachments) {
         if (attachment.id && data[classStudent.id][topicIndex].attachments.indexOf(attachment.id) === -1) {
           try {
-            if (attachment.type === 'file') {
-              const filepath = await attachment.download(BaseDestiny)
-              const fileExtension = path.extname(filepath)
-              const photoExtension = ['.jpg', '.png', '.gif']
-              if (photoExtension.indexOf(fileExtension) > -1) {
-                let telegramPhoto
-                for (const chatID of config.notifications.chatIDs) {
-                  if (telegramPhoto) {
-                    await telegram.sendPhoto(chatID, telegramPhoto.photo[0]['file_id'])
-                  } else {
-                    telegramPhoto = await telegram.sendPhoto(chatID, {
-                      source: filepath
-                    })
-                  }
-                }
-              } else {
-                let telegramFile
-                for (const chatID of config.notifications.chatIDs) {
-                  if (telegramFile) {
-                    await telegram.sendDocument(chatID, telegramFile.document['file_id'])
-                  } else {
-                    telegramFile = await telegram.sendDocument(chatID, {
-                      source: filepath
-                    })
-                  }
-                }
-              }
-              data[classStudent.id][topicIndex].attachments.push(attachment.id)
-              storage.saveData('topics', data)
-              fs.unlink(filepath, (err) => {
-                if (err) {
-                  sendLog.error(err)
-                }
-              })
-            }
             if (attachment.type === 'quiz') {
               const msg = `Pesquisa\n${attachment.title}\nPeríodo de envio inicia em ${textUtils.createDateString(attachment.startDate)} e termina em ${textUtils.createDateString(attachment.endDate)}`
               for (const chatID of config.notifications.chatIDs) {
@@ -91,8 +48,7 @@ const classTopics = async (classStudent, telegram) => {
               }
               data[classStudent.id][topicIndex].attachments.push(attachment.id)
               storage.saveData('topics', data)
-            }
-            if (attachment.type === 'homework') {
+            } else if (attachment.type === 'homework') {
               let msg = `Tarefa\n`
               msg += `${attachment.title}\n`
               msg += `${await attachment.getDescription()}\n\n`
@@ -105,8 +61,7 @@ const classTopics = async (classStudent, telegram) => {
               }
               data[classStudent.id][topicIndex].attachments.push(attachment.id)
               storage.saveData('topics', data)
-            }
-            if (attachment.type === 'webcontent') {
+            } else if (attachment.type === 'webcontent') {
               const msgArray = [attachment.title]
               if (attachment.description) {
                 msgArray.push(attachment.description)

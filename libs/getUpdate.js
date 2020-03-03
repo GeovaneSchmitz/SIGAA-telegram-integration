@@ -5,6 +5,7 @@ const Sigaa = require('sigaa-api')
 const grades = require('./grades')
 const news = require('./news')
 const topics = require('./topics')
+const files = require('./files')
 const members = require('./members')
 const educationalPlan = require('./educationalPlan')
 
@@ -32,10 +33,31 @@ const getUpdateMsg = async ({ sendToTelegram, chatId } = {}) => {
     for (const classStudent of classes) { // for each class
       const classStartTime = Date.now()
       const tasks = [
-        { name: 'TopicsAndFiles', label: 'Topics and Files', function: () => topics(classStudent, telegram) },
-        { name: 'news', label: 'News', function: () => news(classStudent, telegram) },
-        { name: 'educationalPlan', label: 'Education Plan', function: () => educationalPlan.educationalPlanNotify(classStudent, telegram) },
-        { name: 'grades', label: 'Grades', function: () => grades(classStudent, telegram) }
+        {
+          name: 'topics',
+          label: 'Topics',
+          function: () => topics(classStudent, telegram)
+        },
+        {
+          name: 'files',
+          label: 'Files',
+          function: () => files(classStudent, telegram)
+        },
+        {
+          name: 'news',
+          label: 'News',
+          function: () => news(classStudent, telegram)
+        },
+        {
+          name: 'educationalPlan',
+          label: 'Education Plan',
+          function: () => educationalPlan.educationalPlanNotify(classStudent, telegram)
+        },
+        {
+          name: 'grades',
+          label: 'Grades',
+          function: () => grades(classStudent, telegram)
+        }
       ]
       const promises = tasks.map(task => {
         if (config.notifications[task.name]) {

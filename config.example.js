@@ -13,7 +13,8 @@ module.exports = {
     chatIDs: [], // array with chatId will that be notify, chatId can be obtained in https://api.telegram.org/bot<BOT_TOKEN>/getUpdates 'message.chat.id'
     updateInterval: 1800000, // in miliseconds. 1800000 is 30min
     grades: true, // Grades update, if false /vernotas doesn't work properly
-    TopicsAndFiles: true, // Topics, files and all attachments
+    topics: true, // Topics and attachments, such as: research, questionnaire, videos and homework
+    files: true,
     news: true,
     educationalPlan: true // Necessary to have latex installed
   },
