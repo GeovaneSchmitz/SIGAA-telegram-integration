@@ -389,9 +389,9 @@ const getTeacher = async (searchTerm, limitResult = 5) => {
   }
   const resultLimited = results.filter((value, index) => {
     if (limitResult > index) {
-      limited = true
       return true
     } else {
+      limited = true
       return false
     }
   })
