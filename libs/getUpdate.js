@@ -63,17 +63,16 @@ const getUpdateMsg = async ({ sendToTelegram, chatId } = {}) => {
       })
       const classeTitle = textUtils.getPrettyClassName(classStudent.title)
       const msg = [classeTitle]
-      msg.push(
-        await Promise.all(promises)
-          .then((promiseResponses) => {
-            return promiseResponses.map(response => {
-              if (response.status === 'ok') {
-                return calcTime(response.endTime, classStartTime, response.label)
-              } else {
-                return `> ${response.label}: ${response.status}`
-              }
-            })
+      msg.push(...await Promise.all(promises)
+        .then((promiseResponses) => {
+          return promiseResponses.map(response => {
+            if (response.status === 'OK') {
+              return calcTime(response.endTime, classStartTime, response.label)
+            } else {
+              return `> ${response.label}: ${response.status}`
+            }
           })
+        })
       )
       sendLog.log(msg.join('\n'), { sendToTelegram, chatId })
     }
