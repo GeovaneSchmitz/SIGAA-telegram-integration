@@ -80,8 +80,7 @@ function createNumRoman (num) {
     I: 1
   }
   let roman = ''
-  let i
-  for (i in lookup) {
+  for (const i in lookup) {
     while (num >= lookup[i]) {
       roman += i
       num -= lookup[i]
