@@ -64,7 +64,7 @@ const wordTitleCase = word => {
 }
 
 function createNumRoman (num) {
-  var lookup = {
+  const lookup = {
     M: 1000,
     CM: 900,
     D: 500,
@@ -79,8 +79,8 @@ function createNumRoman (num) {
     IV: 4,
     I: 1
   }
-  var roman = ''
-  var i
+  let roman = ''
+  let i
   for (i in lookup) {
     while (num >= lookup[i]) {
       roman += i

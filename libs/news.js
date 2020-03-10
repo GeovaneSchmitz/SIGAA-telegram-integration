@@ -5,7 +5,7 @@ const storage = require('./storage')
 
 async function classNews (classStudent, telegram) {
   const data = storage.getData('news')
-  var newsList = await classStudent.getNews() // this lists all news
+  let newsList = await classStudent.getNews() // this lists all news
   if (!data[classStudent.id]) data[classStudent.id] = []
 
   const newNews = newsList.filter(news => {

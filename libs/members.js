@@ -13,7 +13,7 @@ async function classMembers () {
   const data = []
   for (const classStudent of classes) { // for each class
     try {
-      var members = await classStudent.getMembers() // this lists all members
+      const members = await classStudent.getMembers() // this lists all members
       data.push({
         className: classStudent.title,
         teachers: members.teachers,

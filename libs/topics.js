@@ -5,7 +5,7 @@ const storage = require('./storage')
 
 const classTopics = async (classStudent, telegram) => {
   const data = storage.getData('topics')
-  var topics = await classStudent.getTopics() // this lists all topics
+  const topics = await classStudent.getTopics() // this lists all topics
   if (!data[classStudent.id]) data[classStudent.id] = []
   const dataTopicsWithoutAttachmentString = data[classStudent.id].map((topic) => {
     const topicClone = JSON.parse(JSON.stringify(topic))
