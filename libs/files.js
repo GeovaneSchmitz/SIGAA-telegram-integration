@@ -3,7 +3,6 @@ const fs = require('fs')
 const config = require('../config')
 const sendLog = require('./sendLog')
 const storage = require('./storage')
-
 const BaseDestiny = path.join(__dirname, '..', 'downloads')
 
 fs.mkdir(BaseDestiny, (err) => {
@@ -13,36 +12,24 @@ fs.mkdir(BaseDestiny, (err) => {
 const classFiles = async (classStudent, telegram) => {
   try {
     const data = storage.getData('files')
-    var files = await classStudent.getFiles() // this lists all files
+    const files = await classStudent.getFiles() // this lists all files
     if (!data[classStudent.id]) data[classStudent.id] = []
 
     for (const file of files) { // for each topic
       if (!data[classStudent.id].includes(file.id)) {
         try {
           const filepath = await file.download(BaseDestiny)
-          const fileExtension = path.extname(filepath)
-          const photoExtension = ['.jpg', '.png', '.gif']
-          if (photoExtension.indexOf(fileExtension) > -1) {
-            let telegramPhoto
-            for (const chatID of config.notifications.chatIDs) {
-              if (telegramPhoto) {
-                await telegram.sendPhoto(chatID, telegramPhoto.photo[0]['file_id'])
-              } else {
-                telegramPhoto = await telegram.sendPhoto(chatID, {
-                  source: filepath
-                })
-              }
-            }
-          } else {
-            let telegramFile
-            for (const chatID of config.notifications.chatIDs) {
-              if (telegramFile) {
-                await telegram.sendDocument(chatID, telegramFile.document['file_id'])
-              } else {
-                telegramFile = await telegram.sendDocument(chatID, {
-                  source: filepath
-                })
-              }
+          const abbreviation = classStudent.abbreviation.replace(/[0-9]*/g, '')
+          const filename = `${abbreviation} - ${path.basename(filepath)}`
+          let telegramFile
+          for (const chatID of config.notifications.chatIDs) {
+            if (telegramFile) {
+              await telegram.sendDocument(chatID, telegramFile.document['file_id'])
+            } else {
+              telegramFile = await telegram.sendDocument(chatID, {
+                source: filepath,
+                filename
+              })
             }
           }
           data[classStudent.id].push(file.id)
