@@ -2,6 +2,8 @@ const textUtils = require('./textUtils')
 const config = require('../config')
 const sendLog = require('./sendLog')
 const storage = require('./storage')
+const { SigaaErrors } = require('sigaa-api')
+const sendSigaaFile = require('./sendSigaaFile')
 
 const classTopics = async (classStudent, telegram) => {
   const data = storage.getData('topics')
@@ -17,8 +19,8 @@ const classTopics = async (classStudent, telegram) => {
       const topicObj = {
         title: topic.title,
         contentText: topic.contentText,
-        startTimestamp: Math.trunc(topic.startDate.valueOf() / 1000),
-        endTimestamp: Math.trunc(topic.endDate.valueOf() / 1000)
+        startDate: new Date(topic.startDate),
+        endDate: new Date(topic.endDate)
       }
       let topicIndex = dataTopicsWithoutAttachmentString.indexOf(JSON.stringify(topicObj))
       topicObj.attachments = []
@@ -39,61 +41,74 @@ const classTopics = async (classStudent, telegram) => {
       topicObj.attachments = []
 
       for (const attachment of topic.attachments) {
-        if (attachment.id && data[classStudent.id][topicIndex].attachments.indexOf(attachment.id) === -1) {
+        const foundAttachment = data[classStudent.id][topicIndex].attachments.find((storedAttachment) => {
+          return attachment.type === storedAttachment.type &&
+            ((attachment.id && attachment.id === storedAttachment.id) || (attachment.src && attachment.src === storedAttachment.src))
+        })
+        if (!foundAttachment) {
           try {
+            let msg = ''
+            const classTitle = textUtils.getPrettyClassName(classStudent.title)
             if (attachment.type === 'quiz') {
-              const msg = `Pesquisa\n${attachment.title}\nPeríodo de envio inicia em ${textUtils.createDateString(attachment.startDate)} e termina em ${textUtils.createDateString(attachment.endDate)}`
-              for (const chatID of config.notifications.chatIDs) {
-                await telegram.sendMessage(chatID, msg)
-              }
-              data[classStudent.id][topicIndex].attachments.push(attachment.id)
-              storage.saveData('topics', data)
+              const quizTitle = attachment.title
+              const quizStartDate = await attachment.startDate
+              const quizEndDate = await attachment.endDate
+              const msgArray = [`Pesquisa de ${classTitle}`]
+              msgArray.push(quizTitle)
+              msgArray.push(`Período de envio inicia em ${textUtils.createDateString(quizStartDate)} e termina em ${textUtils.createDateString(quizEndDate)}`)
+              msg = msgArray.join('\n')
             } else if (attachment.type === 'homework') {
-              let msg = `Tarefa\n`
-              msg += `${attachment.title}\n`
-              msg += `${await attachment.getDescription()}\n\n`
-              if (await attachment.getHaveGrade()) {
-                msg += `Tem nota\n`
+              const homeworkTitle = attachment.title
+              const homeworkDescription = await attachment.getDescription()
+              const homeworkHaveGrade = await attachment.getHaveGrade()
+              const homeworkStartDate = await attachment.startDate
+              const homeworkEndDate = await attachment.endDate
+              const msgArray = [`Tarefa de ${classTitle}`]
+              msgArray.push(homeworkTitle)
+              msgArray.push(homeworkDescription)
+              msgArray.push('')
+              if (homeworkHaveGrade) {
+                msgArray.push('Tem nota')
               }
-              msg += `Período de envio inicia em ${textUtils.createDateString(attachment.startDate)} e termina em ${textUtils.createDateString(attachment.startDate)}`
-              for (const chatID of config.notifications.chatIDs) {
-                await telegram.sendMessage(chatID, msg)
+              msgArray.push(`Período de envio inicia em ${textUtils.createDateString(homeworkStartDate)} e termina em ${textUtils.createDateString(homeworkEndDate)}`)
+              msg = msgArray.join('\n')
+              try {
+                const file = await attachment.getAttachmentFile()
+                await sendSigaaFile(file, classStudent, telegram)
+              } catch (err) {
+                if (err.message !== SigaaErrors.SIGAA_HOMEWORK_HAS_BEEN_SUBMITTED && err.message !== SigaaErrors.SIGAA_HOMEWORK_HAS_NO_FILE) {
+                  throw err
+                }
               }
-              data[classStudent.id][topicIndex].attachments.push(attachment.id)
-              storage.saveData('topics', data)
             } else if (attachment.type === 'webcontent') {
-              const msgArray = [attachment.title]
+              const webContentTitle = attachment.title
+              const webContentBody = await attachment.getContent()
+              const webcontentDate = await attachment.getDate()
+              const msgArray = [classTitle]
+              msgArray.push(webContentTitle)
               if (attachment.description) {
                 msgArray.push(attachment.description)
               }
-              const content = await attachment.getContent()
-              const date = await attachment.getDate()
-              const dateString = textUtils.createDateString(date)
-
-              msgArray.push(content)
-              msgArray.push(dateString)
-
-              const msg = msgArray.join('\n')
-              for (const chatID of config.notifications.chatIDs) {
-                await telegram.sendMessage(chatID, msg)
-              }
-              data[classStudent.id][topicIndex].attachments.push(attachment.id)
-              storage.saveData('topics', data)
+              msgArray.push(webContentBody)
+              msgArray.push(textUtils.createDateString(webcontentDate))
+              msg = msgArray.join('\n')
+            } else if (attachment.type === 'video') {
+              const videoTitle = attachment.title
+              const videoDescription = attachment.description
+              const msgArray = [attachment.src]
+              msgArray.push(classTitle)
+              msgArray.push(videoTitle)
+              msgArray.push(videoDescription)
+              msg = msgArray.join('\n')
             }
-          } catch (err) {
-            sendLog.error(err)
-          }
-        } else if (attachment.src && data[classStudent.id][topicIndex].attachments.indexOf(attachment.src) === -1) {
-          try {
-            if (attachment.type === 'video') {
-              let msg = `${attachment.src}\n`
-              msg += `${textUtils.getPrettyClassName(classStudent.title)}\n`
-              msg += `${attachment.title}\n`
-              msg += `${attachment.description}`
+            if (msg !== '') {
               for (const chatID of config.notifications.chatIDs) {
                 await telegram.sendMessage(chatID, msg)
               }
-              data[classStudent.id][topicIndex].attachments.push(attachment.src)
+              data[classStudent.id][topicIndex].attachments.push({
+                type: attachment.type,
+                id: attachment.id
+              })
               storage.saveData('topics', data)
             }
           } catch (err) {

@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
-const config = require('../config')
 const sendLog = require('./sendLog')
+const sendSigaaFile = require('./sendSigaaFile')
 const storage = require('./storage')
 const BaseDestiny = path.join(__dirname, '..', 'downloads')
 
@@ -18,27 +18,9 @@ const classFiles = async (classStudent, telegram) => {
     for (const file of files) { // for each topic
       if (!data[classStudent.id].includes(file.id)) {
         try {
-          const filepath = await file.download(BaseDestiny)
-          const abbreviation = classStudent.abbreviation.replace(/[0-9]*/g, '')
-          const filename = `${abbreviation} - ${path.basename(filepath)}`
-          let telegramFile
-          for (const chatID of config.notifications.chatIDs) {
-            if (telegramFile) {
-              await telegram.sendDocument(chatID, telegramFile.document['file_id'])
-            } else {
-              telegramFile = await telegram.sendDocument(chatID, {
-                source: filepath,
-                filename
-              })
-            }
-          }
+          await sendSigaaFile(file, classStudent, telegram)
           data[classStudent.id].push(file.id)
           storage.saveData('files', data)
-          fs.unlink(filepath, (err) => {
-            if (err) {
-              sendLog.error(err)
-            }
-          })
         } catch (err) {
           sendLog.error(err)
         }
