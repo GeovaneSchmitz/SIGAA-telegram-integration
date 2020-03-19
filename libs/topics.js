@@ -48,6 +48,7 @@ const classTopics = async (classStudent, telegram) => {
         if (!foundAttachment) {
           try {
             let msg = ''
+            let file = null
             const classTitle = textUtils.getPrettyClassName(classStudent.title)
             if (attachment.type === 'quiz') {
               const quizTitle = attachment.title
@@ -73,8 +74,7 @@ const classTopics = async (classStudent, telegram) => {
               msgArray.push(`Período de envio inicia em ${textUtils.createDateString(homeworkStartDate)} e termina em ${textUtils.createDateString(homeworkEndDate)}`)
               msg = msgArray.join('\n')
               try {
-                const file = await attachment.getAttachmentFile()
-                await sendSigaaFile(file, classStudent, telegram)
+                file = await attachment.getAttachmentFile()
               } catch (err) {
                 if (err.message !== SigaaErrors.SIGAA_HOMEWORK_HAS_BEEN_SUBMITTED && err.message !== SigaaErrors.SIGAA_HOMEWORK_HAS_NO_FILE) {
                   throw err
@@ -101,9 +101,13 @@ const classTopics = async (classStudent, telegram) => {
               msgArray.push(videoDescription)
               msg = msgArray.join('\n')
             }
+
             if (msg !== '') {
               for (const chatID of config.notifications.chatIDs) {
                 await telegram.sendMessage(chatID, msg)
+              }
+              if (file) {
+                await sendSigaaFile(file, classStudent, telegram)
               }
               data[classStudent.id][topicIndex].attachments.push({
                 type: attachment.type,
