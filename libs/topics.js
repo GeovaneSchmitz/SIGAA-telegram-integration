@@ -1,9 +1,17 @@
+const fs = require('fs')
 const textUtils = require('./textUtils')
 const config = require('../config')
+const path = require('path')
 const sendLog = require('./sendLog')
 const storage = require('./storage')
 const { SigaaErrors } = require('sigaa-api')
-const sendSigaaFile = require('./sendSigaaFile')
+const { genFileNameWithClassAbbreviation } = require('./files')
+
+const BaseDestiny = path.join(__dirname, '..', 'downloads')
+
+fs.mkdir(BaseDestiny, (err) => {
+  if (err && err.code !== 'EEXIST') throw new Error('up')
+})
 
 const classTopics = async (classStudent, telegram) => {
   const data = storage.getData('topics')
@@ -103,12 +111,38 @@ const classTopics = async (classStudent, telegram) => {
             }
 
             if (msg !== '') {
-              for (const chatID of config.notifications.chatIDs) {
-                await telegram.sendMessage(chatID, msg)
-              }
+              let filepath = null
+              let filename = null
+              let telegramFile = null
+
               if (file) {
-                await sendSigaaFile(file, classStudent, telegram)
+                filepath = await file.download(BaseDestiny)
+                filename = genFileNameWithClassAbbreviation(classStudent, filepath)
               }
+
+              for (const chatID of config.notifications.chatIDs) {
+                const msgResult = await telegram.sendMessage(chatID, msg)
+                if (file) {
+                  if (telegramFile) {
+                    await telegram.sendDocument(chatID, telegramFile.document['file_id'], {
+                      reply_to_message_id: msgResult['message_id']
+                    })
+                  } else {
+                    telegramFile = await telegram.sendDocument(chatID, {
+                      source: filepath,
+                      filename
+                    }, {
+                      reply_to_message_id: msgResult['message_id']
+                    })
+                    fs.unlink(filepath, (err) => {
+                      if (err) {
+                        sendLog.error(err)
+                      }
+                    })
+                  }
+                }
+              }
+
               data[classStudent.id][topicIndex].attachments.push({
                 type: attachment.type,
                 id: attachment.id

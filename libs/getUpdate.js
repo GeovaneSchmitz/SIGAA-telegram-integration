@@ -5,7 +5,7 @@ const Sigaa = require('sigaa-api')
 const grades = require('./grades')
 const news = require('./news')
 const topics = require('./topics')
-const files = require('./files')
+const { classFiles: files } = require('./files')
 const members = require('./members')
 const educationalPlan = require('./educationalPlan')
 

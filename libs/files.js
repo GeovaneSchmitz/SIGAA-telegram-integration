@@ -1,13 +1,19 @@
 const path = require('path')
 const fs = require('fs')
 const sendLog = require('./sendLog')
-const sendSigaaFile = require('./sendSigaaFile')
 const storage = require('./storage')
+const config = require('../config')
+
 const BaseDestiny = path.join(__dirname, '..', 'downloads')
 
 fs.mkdir(BaseDestiny, (err) => {
   if (err && err.code !== 'EEXIST') throw new Error('up')
 })
+
+const genFileNameWithClassAbbreviation = (classStudent, filepath) => {
+  const abbreviation = classStudent.abbreviation.replace(/[0-9]*/g, '')
+  return `${abbreviation} - ${path.basename(filepath)}`
+}
 
 const classFiles = async (classStudent, telegram) => {
   try {
@@ -17,8 +23,25 @@ const classFiles = async (classStudent, telegram) => {
 
     for (const file of files) { // for each topic
       if (!data[classStudent.id].includes(file.id)) {
+        const filepath = await file.download(BaseDestiny)
+        const filename = genFileNameWithClassAbbreviation(classStudent, filepath)
         try {
-          await sendSigaaFile(file, classStudent, telegram)
+          let telegramFile
+          for (const chatID of config.notifications.chatIDs) {
+            if (telegramFile) {
+              await telegram.sendDocument(chatID, telegramFile.document['file_id'])
+            } else {
+              telegramFile = await telegram.sendDocument(chatID, {
+                source: filepath,
+                filename
+              })
+              fs.unlink(filepath, (err) => {
+                if (err) {
+                  sendLog.error(err)
+                }
+              })
+            }
+          }
           data[classStudent.id].push(file.id)
           storage.saveData('files', data)
         } catch (err) {
@@ -31,4 +54,4 @@ const classFiles = async (classStudent, telegram) => {
   }
 }
 
-module.exports = classFiles
+module.exports = { classFiles, genFileNameWithClassAbbreviation }
