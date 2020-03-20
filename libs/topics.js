@@ -56,7 +56,7 @@ const classTopics = async (classStudent, telegram) => {
               const quizEndDate = await attachment.endDate
               const msgArray = [`Pesquisa de ${classTitle}`]
               msgArray.push(quizTitle)
-              msgArray.push(`Período de envio inicia em ${textUtils.createDateString(quizStartDate)} e termina em ${textUtils.createDateString(quizEndDate)}`)
+              msgArray.push(textUtils.createDeadLineString(quizStartDate, quizEndDate))
               msg = msgArray.join('\n')
             } else if (attachment.type === 'homework') {
               const homeworkTitle = attachment.title
@@ -71,7 +71,7 @@ const classTopics = async (classStudent, telegram) => {
               if (homeworkHaveGrade) {
                 msgArray.push('Tem nota')
               }
-              msgArray.push(`Período de envio inicia em ${textUtils.createDateString(homeworkStartDate)} e termina em ${textUtils.createDateString(homeworkEndDate)}`)
+              msgArray.push(textUtils.createDeadLineString(homeworkStartDate, homeworkEndDate))
               msg = msgArray.join('\n')
               try {
                 file = await attachment.getAttachmentFile()

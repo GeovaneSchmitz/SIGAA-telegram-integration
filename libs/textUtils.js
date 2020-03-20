@@ -1,23 +1,9 @@
 const config = require('../config')
 
-const textUtils = {}
-textUtils.getPrettyClassName = (className) => {
-  return config.classnames[className] || textUtils.toClassTitleCase(className)
-}
-textUtils.toTitleCase = textInput => {
-  const str = textInput.toUpperCase()
-
-  return str.replace(/\w\S*/g, word => {
-    const textParentheses = word.split(')')
-    if (textParentheses.length === 2) {
-      return wordTitleCase(textParentheses[0]) + ')'
-    } else {
-      return wordTitleCase(textParentheses[0])
-    }
-  })
-}
-textUtils.capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1)
+const createTime = (date) => {
+  const hours = '0' + date.getHours()
+  const minutes = '0' + date.getMinutes()
+  return `${hours.substr(-2)}:${minutes.substr(-2)}`
 }
 
 const wordTitleCase = word => {
@@ -63,7 +49,7 @@ const wordTitleCase = word => {
     .join('-')
 }
 
-function createNumRoman (num) {
+const createNumRoman = (num) => {
   const lookup = {
     M: 1000,
     CM: 900,
@@ -88,6 +74,30 @@ function createNumRoman (num) {
   }
   return roman
 }
+
+const textUtils = {}
+
+textUtils.getPrettyClassName = (className) => {
+  return config.classnames[className] || textUtils.toClassTitleCase(className)
+}
+
+textUtils.toTitleCase = textInput => {
+  const str = textInput.toUpperCase()
+
+  return str.replace(/\w\S*/g, word => {
+    const textParentheses = word.split(')')
+    if (textParentheses.length === 2) {
+      return wordTitleCase(textParentheses[0]) + ')'
+    } else {
+      return wordTitleCase(textParentheses[0])
+    }
+  })
+}
+
+textUtils.capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 textUtils.toClassTitleCase = textInput => {
   const text = textUtils.toTitleCase(textInput)
   return text.replace(/[0-9]*/g, number => {
@@ -99,12 +109,18 @@ textUtils.createDateString = (date, options) => {
   const day = '0' + date.getDate()
   const month = '0' + (date.getMonth() + 1)
   const year = date.getFullYear().toString()
-  let dateString
+  let dateString = ''
   const optionYear = options ? (options.year === undefined ? null : options.year) : null
+  const optionParentheses = options ? (options.parentheses === undefined ? null : options.parentheses) : null
+  if (optionParentheses) {
+    dateString += '('
+  }
+  dateString += `${day.substr(-2)}/${month.substr(-2)}`
   if (optionYear || (optionYear === null && date.getFullYear() !== new Date().getFullYear())) {
-    dateString = `${day.substr(-2)}/${month.substr(-2)}/${year.substr(-2)}`
-  } else {
-    dateString = `${day.substr(-2)}/${month.substr(-2)}`
+    dateString += `/${year.substr(-2)}`
+  }
+  if (optionParentheses) {
+    dateString += ')'
   }
   if (date.getHours() !== 0 || date.getMinutes() !== 0) {
     dateString += ` às ${createTime(date)}`
@@ -135,10 +151,43 @@ textUtils.removeAccents = (strAccents) => {
   }
   return textAccentsOut.join('')
 }
-const createTime = (date) => {
-  const hours = '0' + date.getHours()
-  const minutes = '0' + date.getMinutes()
-  return `${hours.substr(-2)}:${minutes.substr(-2)}`
-}
 
+textUtils.createDeadLineString = (startDate, endDate, options) => {
+  const msgArray = ['Periodo de envio']
+  if (startDate.valueOf() > Date.now()) {
+    msgArray.push('começará em')
+    msgArray.push(textUtils.createDateString(startDate, options))
+    msgArray.push('e')
+  }
+  let parentheses = false
+  if (endDate.valueOf() > Date.now()) {
+    const endDateTime = (((((endDate.getHours() * 60) + endDate.getMinutes()) * 60) + endDate.getSeconds()) * 1000) + endDate.getMilliseconds()
+    const endDateWithoutTime = new Date(endDate.valueOf() - endDateTime)
+    const oneWeekInMilliseconds = 604800000
+    if (endDateWithoutTime.valueOf() - oneWeekInMilliseconds <= Date.now()) {
+      msgArray.push('terminará')
+      const weekDays = [
+        'no domingo',
+        'na segunda-feira',
+        'na terça-feira',
+        'na quarta-feira',
+        'na quinta-feira',
+        'na sexta-feira',
+        'no sábado'
+      ]
+      msgArray.push(weekDays[endDate.getDay()])
+      parentheses = true
+    } else {
+      msgArray.push('terminará em')
+    }
+  } else {
+    msgArray.push('terminou em')
+  }
+  msgArray.push(textUtils.createDateString(endDate, {
+    ...options,
+    parentheses
+  }))
+
+  return msgArray.join(' ')
+}
 module.exports = textUtils
