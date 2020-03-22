@@ -5,6 +5,13 @@ const storageDataFilename = path.join(__dirname, '..', '.data/', 'data.json')
 let data
 const storage = {}
 let lockWrite = null
+
+const BaseDestiny = path.join(__dirname, '..', '.data')
+
+fs.mkdir(BaseDestiny, (err) => {
+  if (err && err.code !== 'EEXIST') throw new Error('up')
+})
+
 const writeData = (lockWriteId) => {
   return new Promise((resolve, reject) => {
     if (!lockWrite || lockWriteId === lockWrite) {
