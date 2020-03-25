@@ -17,7 +17,7 @@ async function classNews (classStudent, telegram) {
       const msg = `${textUtils.getPrettyClassName(classStudent.title)}\n` +
         `${news.title}\n` +
         `${await news.getContent()}\n` +
-        `Enviado em ${textUtils.createDateString(await news.getDate())}`
+        `Enviado em ${textUtils.createDateString(await news.getDate(), { inWords: true })}`
       for (const chatID of config.notifications.chatIDs) {
         await telegram.sendMessage(chatID, msg)
       }

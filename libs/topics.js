@@ -33,7 +33,7 @@ const classTopics = async (classStudent, telegram) => {
       let topicIndex = dataTopicsWithoutAttachmentString.indexOf(JSON.stringify(topicObj))
       topicObj.attachments = []
       if (topicIndex === -1) {
-        const date = textUtils.createDatesString(topic.startDate, topic.endDate)
+        const date = textUtils.createDatesString(topic.startDate, topic.endDate, { inWords: true })
         let msg = `${textUtils.getPrettyClassName(classStudent.title)}\n`
         msg += `${topic.title}\n`
         if (topic.contentText !== '') msg += `${topic.contentText}\n`
@@ -65,6 +65,18 @@ const classTopics = async (classStudent, telegram) => {
               const msgArray = [`Pesquisa de ${classTitle}`]
               msgArray.push(quizTitle)
               msgArray.push(textUtils.createDeadLineString(quizStartDate, quizEndDate))
+              msg = msgArray.join('\n')
+            } else if (attachment.type === 'scheduled-chat') {
+              const chatTitle = attachment.title
+              const chatStartDate = await attachment.startDate
+              const chatEndDate = await attachment.endDate
+              const chatDescription = await attachment.getDescription()
+
+              const msgArray = [`Chat agendado de ${classTitle}`]
+              msgArray.push(chatTitle)
+              msgArray.push(chatDescription)
+              msgArray.push('')
+              msgArray.push(textUtils.createChatPeriodString(chatStartDate, chatEndDate))
               msg = msgArray.join('\n')
             } else if (attachment.type === 'homework') {
               const homeworkTitle = attachment.title
@@ -142,11 +154,13 @@ const classTopics = async (classStudent, telegram) => {
                   }
                 }
               }
+              const attachmentObj = {
+                type: attachment.type
+              }
+              if (attachment.id) attachmentObj.id = attachment.id
+              if (attachment.src) attachmentObj.src = attachment.src
 
-              data[classStudent.id][topicIndex].attachments.push({
-                type: attachment.type,
-                id: attachment.id
-              })
+              data[classStudent.id][topicIndex].attachments.push(attachmentObj)
               storage.saveData('topics', data)
             }
           } catch (err) {
