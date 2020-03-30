@@ -13,7 +13,7 @@
     "escape-latex": "^1.2.0",
     "mustache": "^4.0.0",
     "node-latex": "^2.6.3",
-    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#e1c09d3264adc0a80f7cfcd261e3835860d2ee82",
+    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#66a552c3ee2810bea32fbd3e5d22768cbe0695ba",
     "telegraf": "^3.36.0"
   },
   "devDependencies": {
