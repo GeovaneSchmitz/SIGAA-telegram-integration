@@ -2,8 +2,12 @@ const config = require('../config')
 
 const createTime = (date) => {
   const hours = '0' + date.getHours()
-  const minutes = '0' + date.getMinutes()
-  return `${hours.substr(-2)}h${minutes.substr(-2)}min`
+  let timeString = `${hours.substr(-2)}h`
+  if (date.getMinutes() !== 0) {
+    const minutes = '0' + date.getMinutes()
+    timeString += `${minutes.substr(-2)}min`
+  }
+  return timeString
 }
 
 const wordTitleCase = word => {
@@ -128,8 +132,11 @@ textUtils.createDateString = (date, options) => {
   const optionYear = options ? (options.year === undefined ? null : options.year) : null
   const optionInWords = options ? (options.inWords === undefined ? null : options.inWords) : null
   const optionParentheses = options ? (options.parentheses === undefined ? null : options.parentheses) : null
+  const optionPreposition = options ? (options.preposition === undefined ? null : options.preposition) : null
+
   if (optionInWords) {
     if (optionYear) {
+      if (optionPreposition) dateStringArray.push('em')
       dateStringArray.push(date.getDate())
       dateStringArray.push('de')
       dateStringArray.push(months[date.getMonth()])
@@ -137,8 +144,8 @@ textUtils.createDateString = (date, options) => {
       dateStringArray.push(year)
     } else {
       const dateNow = new Date()
-      const delta = dateNow - date.valueOf()
-      const dayDelta = Math.floor(delta / 86400000) // 1000 * 60 * 60 * 24 = 86400000 = 1 day
+      // 1000 * 60 * 60 * 24 = 86400000 = 1 day
+      const dayDelta = Math.floor(dateNow / 86400000) - Math.floor(date.valueOf() / 86400000)
       if (dayDelta === 2) {
         dateStringArray.push('anteontem')
       } else if (dayDelta === 1) {
@@ -148,6 +155,7 @@ textUtils.createDateString = (date, options) => {
       } else if (dayDelta === 0) {
         dateStringArray.push('hoje')
       } else {
+        if (optionPreposition) dateStringArray.push('em')
         dateStringArray.push(date.getDate())
         dateStringArray.push('de')
         dateStringArray.push(months[date.getMonth()])
@@ -158,6 +166,7 @@ textUtils.createDateString = (date, options) => {
       }
     }
   } else {
+    if (optionPreposition) dateStringArray.push('em')
     let dateStringFull = `${day.substr(-2)}/${month.substr(-2)}`
     if (optionYear || (date.getFullYear() !== new Date().getFullYear())) {
       dateStringFull += `/${year.substr(-2)}`
@@ -223,45 +232,38 @@ const createPeriodString = (verb, startDate, endDate, options) => {
   if (startDate.valueOf() > Date.now()) {
     msgArray.push('começa')
     let parentheses = false
-    const delta = Date.now() - startDate.valueOf()
 
-    const dayDelta = Math.floor(delta / oneDayInMilliseconds)
+    const dayDelta = Math.floor(Date.now() / oneDayInMilliseconds) - Math.floor(startDate.valueOf() / oneDayInMilliseconds)
 
-    if (dayDelta !== -1 && dayDelta !== 0) {
-      if (startDateWithoutTime.valueOf() - oneWeekInMilliseconds <= Date.now()) {
-        msgArray.push(weekDays[startDate.getDay()])
-        parentheses = true
-      } else {
-        msgArray.push('em')
-      }
+    if (dayDelta !== -1 && dayDelta !== 0 && startDateWithoutTime.valueOf() - oneWeekInMilliseconds <= Date.now()) {
+      msgArray.push(weekDays[startDate.getDay()])
+      parentheses = true
     }
     msgArray.push(textUtils.createDateString(startDate, {
       ...options,
       inWords: true,
+      preposition: true,
       parentheses
     }))
     msgArray.push('e')
   }
   let parentheses = false
 
-  const delta = Date.now() - endDate.valueOf()
-  const dayDelta = Math.floor(delta / oneDayInMilliseconds)
+  const dayDelta = Math.floor(Date.now() / oneDayInMilliseconds) - Math.floor(endDate.valueOf() / oneDayInMilliseconds)
 
   if (endDate.valueOf() > Date.now()) {
     msgArray.push('termina')
-    if (!hideEndDate && dayDelta !== -1 && dayDelta !== 0) {
-      if (endDateWithoutTime.valueOf() - oneWeekInMilliseconds <= Date.now()) {
-        msgArray.push(weekDays[endDate.getDay()])
-        parentheses = true
-      } else {
-        msgArray.push('em')
-      }
+    if (
+      !hideEndDate &&
+      dayDelta !== -1 &&
+      dayDelta !== 0 &&
+      endDateWithoutTime.valueOf() - oneWeekInMilliseconds <= Date.now()
+    ) {
+      msgArray.push(weekDays[endDate.getDay()])
+      parentheses = true
     }
   } else {
     msgArray.push('terminou')
-    if (!hideEndDate && dayDelta !== 0 && dayDelta !== 1 && dayDelta !== 2) {
-      msgArray.push('em')
-    }
   }
   if (hideEndDate) {
     msgArray.push('às')
@@ -270,7 +272,8 @@ const createPeriodString = (verb, startDate, endDate, options) => {
     msgArray.push(textUtils.createDateString(endDate, {
       ...options,
       parentheses,
-      inWords: true
+      inWords: true,
+      preposition: true
     }))
   }
 

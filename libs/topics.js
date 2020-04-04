@@ -71,7 +71,6 @@ const classTopics = async (classStudent, telegram) => {
               const chatStartDate = await attachment.startDate
               const chatEndDate = await attachment.endDate
               const chatDescription = await attachment.getDescription()
-
               const msgArray = [`Chat agendado de ${classTitle}`]
               msgArray.push(chatTitle)
               msgArray.push(chatDescription)
@@ -110,7 +109,7 @@ const classTopics = async (classStudent, telegram) => {
                 msgArray.push(attachment.description)
               }
               msgArray.push(webContentBody)
-              msgArray.push(textUtils.createDateString(webcontentDate))
+              msgArray.push(textUtils.createDateString(webcontentDate, { inWords: true }))
               msg = msgArray.join('\n')
             } else if (attachment.type === 'video') {
               const videoTitle = attachment.title
