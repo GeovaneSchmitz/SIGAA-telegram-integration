@@ -3,6 +3,7 @@ const fs = require('fs')
 const sendLog = require('./sendLog')
 const storage = require('./storage')
 const config = require('../config')
+const textUtils = require('./textUtils')
 
 const BaseDestiny = path.join(__dirname, '..', 'downloads')
 
@@ -11,7 +12,7 @@ fs.mkdir(BaseDestiny, (err) => {
 })
 
 const genFileNameWithClassAbbreviation = (classStudent, filepath) => {
-  const abbreviation = classStudent.abbreviation.replace(/[0-9]*/g, '')
+  const abbreviation = textUtils.parseAbbreviation(classStudent.abbreviation)
   return `${abbreviation} - ${path.basename(filepath)}`
 }
 

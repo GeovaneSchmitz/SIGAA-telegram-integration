@@ -85,6 +85,10 @@ textUtils.getPrettyClassName = (className) => {
   return config.classnames[className] || textUtils.toClassTitleCase(className)
 }
 
+textUtils.parseAbbreviation = (abbreviation) => {
+  return abbreviation.replace(/[0-9]*/g, '').toUpperCase()
+}
+
 textUtils.toTitleCase = textInput => {
   const str = textInput.toUpperCase()
 

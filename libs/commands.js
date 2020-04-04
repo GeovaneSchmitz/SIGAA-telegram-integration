@@ -403,10 +403,11 @@ const searchTeacherByClassName = (searchTerm) => {
   const teacherMembersClasses = storage.getData('members')
   for (const teacherMembers of teacherMembersClasses) {
     const className = textUtils.removeAccents(teacherMembers.className.toLowerCase())
+    const classAbbreviation = textUtils.removeAccents(teacherMembers.classAbbreviation.toLowerCase())
     const classNamePretty = textUtils.removeAccents(textUtils.getPrettyClassName(teacherMembers.className).toLowerCase())
-    if (className.indexOf(searchTerm) > -1 || classNamePretty.indexOf(searchTerm) > -1) {
+    if (classAbbreviation.includes(searchTerm) || className.includes(searchTerm) || classNamePretty.includes(searchTerm)) {
       for (const teacher of teacherMembers.teachers) {
-        const className = textUtils.toTitleCase(teacherMembers.className)
+        const className = textUtils.getPrettyClassName(teacherMembers.className)
         const name = textUtils.toTitleCase(teacher.name)
         const department = textUtils.toTitleCase(teacher.department)
         const email = teacher.email
@@ -427,8 +428,9 @@ const searchClass = (searchTerm) => {
   const teacherMembersClasses = storage.getData('members')
   for (const teacherMembers of teacherMembersClasses) {
     const className = textUtils.removeAccents(teacherMembers.className.toLowerCase())
+    const classAbbreviation = textUtils.removeAccents(teacherMembers.classAbbreviation.toLowerCase())
     const classNamePretty = textUtils.removeAccents(textUtils.getPrettyClassName(teacherMembers.className).toLowerCase())
-    if (className.indexOf(searchTerm) > -1 || classNamePretty.indexOf(searchTerm) > -1) {
+    if (classAbbreviation.includes(searchTerm) || className.includes(searchTerm) || classNamePretty.includes(searchTerm)) {
       results.push(teacherMembers.classId)
       continue
     }

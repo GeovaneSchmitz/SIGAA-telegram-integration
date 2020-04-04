@@ -2,6 +2,7 @@ const Sigaa = require('sigaa-api')
 const config = require('../config')
 const sendLog = require('./sendLog')
 const storage = require('./storage')
+const textUtils = require('./textUtils')
 
 async function classMembers () {
   sendLog.log('Loading members', { sendToTelegram: false })
@@ -15,6 +16,7 @@ async function classMembers () {
     try {
       const members = await classStudent.getMembers() // this lists all members
       data.push({
+        classAbbreviation: textUtils.parseAbbreviation(classStudent.abbreviation),
         className: classStudent.title,
         teachers: members.teachers,
         classId: classStudent.id
