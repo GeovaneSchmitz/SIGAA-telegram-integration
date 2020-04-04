@@ -67,16 +67,22 @@ const classTopics = async (classStudent, telegram) => {
               msgArray.push(textUtils.createDeadLineString(quizStartDate, quizEndDate))
               msg = msgArray.join('\n')
             } else if (attachment.type === 'scheduled-chat') {
-              const chatTitle = attachment.title
-              const chatStartDate = await attachment.startDate
-              const chatEndDate = await attachment.endDate
-              const chatDescription = await attachment.getDescription()
-              const msgArray = [`Chat agendado de ${classTitle}`]
-              msgArray.push(chatTitle)
-              msgArray.push(chatDescription)
-              msgArray.push('')
-              msgArray.push(textUtils.createChatPeriodString(chatStartDate, chatEndDate))
-              msg = msgArray.join('\n')
+              try {
+                const chatTitle = attachment.title
+                const chatStartDate = await attachment.startDate
+                const chatEndDate = await attachment.endDate
+                const chatDescription = await attachment.getDescription()
+                const msgArray = [`Chat agendado de ${classTitle}`]
+                msgArray.push(chatTitle)
+                msgArray.push(chatDescription)
+                msgArray.push('')
+                msgArray.push(textUtils.createChatPeriodString(chatStartDate, chatEndDate))
+                msg = msgArray.join('\n')
+              } catch (err) {
+                if (err.message !== SigaaErrors.SIGAA_SCHEDULED_CHAT_HAS_DISABLE_BY_INSTITUTION) {
+                  throw err
+                }
+              }
             } else if (attachment.type === 'homework') {
               const homeworkTitle = attachment.title
               const homeworkDescription = await attachment.getDescription()
