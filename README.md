@@ -19,9 +19,10 @@ Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando We
 ### Comandos
 * Busca de email e agenda de professor
 `/agenda <nome do professor ou da turma>` ou `/email <nome do professor ou da turma>`
-* Buscar atendimento `/atendimento <nome do professor ou da turma>`
-* Ver as notas `/viewgrades` 
-* Forçar atualização `/forceupdate`
+* Buscar atendimento `/atendimento`
+* ver o plano de ensino `/plano`
+* Ver as notas `/vernotas` 
+* Forçar atualização `/atualizar`
 
 
 
