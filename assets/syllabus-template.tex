@@ -1,0 +1,96 @@
+\documentclass[a4paper]{article}
+\usepackage[top=1.5cm,left=2cm,right=2cm,bottom=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[default]{opensans}
+\usepackage[utf8]{inputenc} 
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage{ltablex}
+\usepackage[table]{xcolor}
+\usepackage{caption}
+\begin{document}
+\begin{figure}
+
+\def\svgwidth{113.07562mm}
+\input{logo.pdf_tex}
+\end{figure}
+\small { \color{black!70!white} \it \fontseries{l}\selectfont {{disclaimer}} }
+\begin{flushright}
+\setstretch{1}
+\setlength{\parskip}{1em}
+\Huge  \fontseries{sb}\selectfont {{documentTitle}}\\
+\normalsize\fontseries{m}\selectfont {{courseTitle}} - {{period}}
+
+{\small
+{{#teachers}}
+{{name}}\\
+{{email}}
+
+{{/teachers}}
+}
+\end{flushright}
+\setstretch{1.25}
+\setlength{\parskip}{1em}
+{{#paragraphs}}
+\par \noindent \large \fontseries{sb}\selectfont  {{title}}
+
+\normalsize \normalsize \fontseries{l}\selectfont
+{{{text}}}
+{{/paragraphs}}
+
+{{#schedule.0}}
+\setstretch{1.8}
+\fontseries{m}\selectfont
+\rowcolors{2}{gray!02}{gray!06}
+\noindent \begin{tabularx}{\textwidth}{ l X }
+  \rowcolor{white}
+  \multicolumn{2}{@{}l}{ \large  \fontseries{sb}\selectfont {{scheduleTitle}}}\\
+  \rowcolor{gray!15}
+  {{scheduleDateColumn}} & {{scheduleDescriptionColumn}} \\
+  \endfirsthead
+  \rowcolor{white}
+  \multicolumn{2}{@{}l}{ \large  \fontseries{sb}\selectfont {{scheduleTitleContinuing}}\dots}\\
+  \rowcolor{gray!15}
+{{scheduleDateColumn}} & \noindent\parbox[c]{\hsize}{ {{scheduleDescriptionColumn}} } \\
+  \endhead
+  \endlastfoot
+{{#schedule}}
+\fontseries{l}\selectfont  {{date}} &   \fontseries{l}\selectfont  {{body}} \\
+{{/schedule}}
+\rowcolor{white}
+\setstretch{1} & \hspace{\textwidth} \\
+ 
+\end{tabularx}
+\setstretch{1.25}
+{{/schedule.0}}
+
+{{#basicReferences.0}}
+\noindent\begin{minipage}{\textwidth}
+\noindent \large  \fontseries{sb}\selectfont {{basicReferencesTitle}}
+\vspace{\parskip}
+\begin{itemize}
+{{#basicReferences}}
+\fontseries{l}\selectfont \item \normalsize {{description}}
+{{/basicReferences}}
+\end{itemize}
+\end{minipage}
+\vspace{\parskip}
+{{/basicReferences.0}}
+
+{{#supplementaryReferences.0}}
+\noindent\begin{minipage}{\textwidth}
+\noindent \large  \fontseries{sb}\selectfont {{supplementaryReferencesTitle}}
+\vspace{\parskip}
+\begin{itemize}
+{{#supplementaryReferences}}
+\fontseries{l}\selectfont
+\item {{description}}
+{{/supplementaryReferences}}
+\end{itemize}
+\end{minipage}
+\vspace{\parskip}
+\fontseries{l}\selectfont 
+{{/supplementaryReferences.0}}
+\end{document}

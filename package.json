@@ -6,23 +6,30 @@
   "author": "Geovane Schmitz <contato@geovanems.com.br>",
   "license": "MIT",
   "scripts": {
+    "migrate": "npx sequelize-cli db:migrate",
+    "seed": "npx sequelize-cli db:seed",
     "start": "node index.js"
   },
   "dependencies": {
     "dotenv": "^8.1.0",
     "escape-latex": "^1.2.0",
-    "mustache": "^4.0.0",
+    "mustache": "^4.0.1",
     "node-latex": "^2.6.3",
-    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#7a495572c9ee9b995d84523e1589e38501fc1277",
+    "pg": "^8.0.3",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.7",
+    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#36e64395fac5ddf7a6ec64c97b038a893c091164",
     "telegraf": "^3.36.0"
   },
   "devDependencies": {
-    "eslint": "^6.1.0",
-    "eslint-config-standard": "^13.0.1",
-    "eslint-config-strongloop": "^2.1.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^9.1.0",
+    "eslint": "^7.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.1",
+    "jsdoc": "^3.6.3",
+    "prettier": "^2.0.5",
+    "sequelize-cli": "^5.5.1"
   }
 }
