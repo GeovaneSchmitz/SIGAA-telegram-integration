@@ -64,7 +64,7 @@ class SendLog {
     } else {
       console.error(err)
       if (telegram !== false) {
-        SendLog._sendToTelegram(err.stack)
+        SendLog._sendToTelegram(`Error:${err.message}\nStack:${err.stack}`)
       }
     }
   }
