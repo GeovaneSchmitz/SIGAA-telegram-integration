@@ -31,7 +31,7 @@ const updaterGrades = async (dbCourse, course) => {
     }
 
     if (grade.grades === undefined && grade.value !== null) {
-      if (!dbGrade) {
+      if (!dbGrade && dbGrade.value === null) {
         gradeStack.push('Nota adicionada')
       }
 
@@ -77,7 +77,14 @@ const updaterGrades = async (dbCourse, course) => {
         if (dbSubGrade) {
           usedSubGrades.push(dbSubGrade.id)
           if (dbSubGrade.value !== subGrade.value) {
-            subGradeStack.push(TextUtils.escapeMarkdownV2('Nota alterada'))
+            if (dbSubGrade.value === null) {
+              subGradeStack.push(TextUtils.escapeMarkdownV2('Nota alterada'))
+            } else {
+              subGradeStack.push(TextUtils.escapeMarkdownV2('Nota adicionada'))
+              subGradeStack.push(
+                TextUtils.escapeMarkdownV2(`Peso ${subGrade.weight}`)
+              )
+            }
           }
 
           if (dbSubGrade.weight !== subGrade.weight) {
@@ -113,7 +120,7 @@ const updaterGrades = async (dbCourse, course) => {
 
       for (const deletedSubGrade of deletedSubGrades) {
         const subGradeStack = []
-
+        if (deletedSubGrade.value === null) continue
         subGradeStack.push(TextUtils.escapeMarkdownV2('Nota removida'))
         subGradeStack.push(
           TextUtils.escapeMarkdownV2(`Peso ${deletedSubGrade.weight}`)
@@ -127,7 +134,11 @@ const updaterGrades = async (dbCourse, course) => {
       }
 
       if (dbGrade.value !== grade.average) {
-        gradeStack.push(TextUtils.escapeMarkdownV2(`Média alterada`))
+        if (dbGrade.value === null) {
+          gradeStack.push(TextUtils.escapeMarkdownV2(`Média adicionada`))
+        } else {
+          gradeStack.push(TextUtils.escapeMarkdownV2(`Média alterada`))
+        }
       }
     }
     if (gradeStack.length > 0) {
@@ -154,12 +165,14 @@ const updaterGrades = async (dbCourse, course) => {
 
     if (subGrades) {
       for (const subGrade of subGrades) {
+        if (subGrade.value === null) continue
         gradeStack.push('*' + TextUtils.escapeMarkdownV2(subGrade.name) + '*')
         gradeStack.push(TextUtils.escapeMarkdownV2('Nota removida'))
         gradeStack.push(TextUtils.escapeMarkdownV2(`Peso ${subGrade.weight}`))
       }
-      gradeStack.push(TextUtils.escapeMarkdownV2('Média removida'))
-    } else {
+      if (deletedGrade.value !== null)
+        gradeStack.push(TextUtils.escapeMarkdownV2('Média removida'))
+    } else if (deletedGrade.value !== null) {
       gradeStack.push(TextUtils.escapeMarkdownV2('Nota removida'))
     }
 
@@ -180,10 +193,7 @@ const updaterGrades = async (dbCourse, course) => {
     const usedGrades = []
     await Promise.all(
       grades.map(async (grade) => {
-        if (!grade.average && !grade.value) {
-          return false
-        }
-        const gradeValue = grade.value || grade.average
+        const gradeValue = grade.value || grade.average || null
 
         const [dbGrade, created] = await Grade.findOrCreate({
           where: {
@@ -214,7 +224,6 @@ const updaterGrades = async (dbCourse, course) => {
         const usedSubGrades = []
         if (grade.grades !== undefined) {
           for (const subGrade of grade.grades) {
-            if (subGrade.value === null) continue
             const [dbSubGrade, created] = await SubGrade.findOrCreate({
               where: {
                 gradeId: dbGrade.id,

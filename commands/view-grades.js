@@ -109,19 +109,31 @@ class ViewGradeCommand {
 
       for (const grade of course.Grades) {
         if (grade.SubGrades.length == 0) {
-          const gradeName = TextUtils.toTitleCase(grade.name)
-          const gradeMsg = `${gradeName}: ${grade.value}`
-          courseStack.push(gradeMsg)
-        } else {
-          const gradeName = TextUtils.toTitleCase(grade.name)
-          courseStack.push(gradeName)
-          for (const subGrade of grade.SubGrades) {
-            const subGradeName = TextUtils.toTitleCase(subGrade.name)
-            const subGradeMsg = `  ${subGradeName}, peso ${subGrade.weight} e valor ${subGrade.value}`
-            courseStack.push(subGradeMsg)
+          if (grade.value !== null) {
+            const gradeName = TextUtils.toTitleCase(grade.name)
+            const gradeMsg = `${gradeName}: ${grade.value}`
+            courseStack.push(gradeMsg)
           }
-          const gradeMsg = `Média: ${grade.value}`
-          courseStack.push(gradeMsg)
+        } else {
+          const subGradeStack = []
+          for (const subGrade of grade.SubGrades) {
+            if (subGrade.value !== null) {
+              const subGradeName = TextUtils.toTitleCase(subGrade.name)
+              const subGradeMsg = `  ${subGradeName}, peso ${subGrade.weight} e valor ${subGrade.value}`
+              subGradeStack.push(subGradeMsg)
+            }
+          }
+          if (subGradeStack.length > 0 || grade.value !== null) {
+            const gradeName = TextUtils.toTitleCase(grade.name)
+            courseStack.push(gradeName)
+          }
+          if (subGradeStack.length > 0) {
+            courseStack.push(subGradeStack.join('\n'))
+          }
+          if (grade.value !== null) {
+            const gradeMsg = `Média: ${grade.value}`
+            courseStack.push(gradeMsg)
+          }
         }
       }
 
