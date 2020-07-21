@@ -55,7 +55,7 @@ const runTask = async (label, task, sendLogOptions, ...arg) => {
     return result
   } catch (err) {
     SendLog.log(`> ${label}: Error`, sendLogOptions)
-    SendLog.log(err)
+    SendLog.error(err)
   }
 }
 
