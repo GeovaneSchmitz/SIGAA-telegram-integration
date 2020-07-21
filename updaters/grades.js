@@ -31,7 +31,7 @@ const updaterGrades = async (dbCourse, course) => {
     }
 
     if (grade.grades === undefined && grade.value !== null) {
-      if (!dbGrade && dbGrade.value === null) {
+      if (!dbGrade || dbGrade.value === null) {
         gradeStack.push('Nota adicionada')
       }
 
