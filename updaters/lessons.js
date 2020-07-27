@@ -151,12 +151,18 @@ const updaterLessons = async (dbCourse, course) => {
           } else if (attachment.type === 'homework') {
             const foundHomework = await Homework.findOne({
               where: {
-                lessonId: dbLesson.id,
                 courseId: dbCourse.id,
                 institutionalId: attachment.id
               }
             })
-            if (!foundHomework) {
+
+            if (foundHomework) {
+              if (foundHomework.lessonId !== dbLesson.id) {
+                await foundHomework.update({
+                  lessonId: dbLesson.id
+                })
+              }
+            } else {
               const homeworkTitle = attachment.title
               const homeworkDescription = await attachment.getDescription()
               const homeworkHaveGrade = await attachment.getHaveGrade()
