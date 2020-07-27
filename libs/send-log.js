@@ -53,18 +53,24 @@ class SendLog {
    * @async
    */
   static async error(err, options) {
-    const { sendToTelegram: telegram } = options || {}
+    const { sendToTelegram } = options || { sendToTelegram: true }
 
     /**
      * if error is telegram too many request
      */
     if (err.message.includes('Too Many Requests') && err.code === 429) {
       const timeout = parseInt(err.description.match(/[0-9]+/g)[0], 10)
-      await new Promise((res) => setTimeout(res, timeout * 1000))
+      await new Promise((resolve) => setTimeout(resolve, timeout * 1000))
     } else {
       console.error(err)
-      if (telegram !== false) {
-        SendLog._sendToTelegram(`Error:${err.message}\nStack:${err.stack}`)
+      if (sendToTelegram) {
+        for (const property of Object.getOwnPropertyNames(err)) {
+          if (property !== 'message') {
+            await SendLog._sendToTelegram(
+              `Error:${err.message}\n${property}:${err[property]}`
+            )
+          }
+        }
       }
     }
   }
