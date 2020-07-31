@@ -1,5 +1,5 @@
 {
-  "name": "discord-sigaa-integration",
+  "name": "telegram-sigaa-integration",
   "version": "0.0.1",
   "main": "index.js",
   "repository": "https://github.com/GeovaneSchmitz/SIGAA-telegram-integration.git",
@@ -18,7 +18,7 @@
     "pg": "^8.0.3",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.21.7",
-    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#36e64395fac5ddf7a6ec64c97b038a893c091164",
+    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#de2e9b3abd4dd4a853ad0b69f00d186b5cef2271",
     "telegraf": "^3.36.0"
   },
   "devDependencies": {
