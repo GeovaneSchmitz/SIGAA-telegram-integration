@@ -40,21 +40,22 @@ const calcTime = (label, startTime, endTime) => {
 
 /**
  * Run the function and log the execution time or if there was an error
- * @param {string} label task label
- * @param {Function} task function that returns a promise
- * @param {object} sendLogOptions options for SendLog
- * @param {any} arg task arguments
+ * @param {object} arg
+ * @param {string} arg.label task label
+ * @param {Function} arg.task function that returns a promise
+ * @param {object} arg.logOptions options for SendLog
+ * @param {array} arg.args task arguments
  * @return {Promise<any>} task result
  * @async
  */
-const runTask = async (label, task, sendLogOptions, ...arg) => {
+const runTask = async ({ label, task, logOptions, args }) => {
   try {
     const taskStartTime = Date.now()
-    const result = await task(...arg)
-    SendLog.log(calcTime(label, taskStartTime, Date.now()), sendLogOptions)
+    const result = await task(...args)
+    SendLog.log(calcTime(label, taskStartTime, Date.now()), logOptions)
     return result
   } catch (err) {
-    SendLog.log(`> ${label}: Error`, sendLogOptions)
+    SendLog.log(`> ${label}: Error`, logOptions)
     SendLog.error(err)
   }
 }
@@ -88,15 +89,20 @@ const updater = async (logOptions) => {
 
         SendLog.log(courseTitle, logOptions)
 
-        const dbCourse = await runTask(
-          'course Record',
-          courseUpdater,
-          logOptions,
-          course
-        )
+        const dbCourse = await runTask({
+          label: 'course Record',
+          task: courseUpdater,
+          args: [course],
+          logOptions
+        })
 
         if (membersIntevalCount === 1) {
-          await runTask('members', membersUpdater, logOptions, dbCourse, course)
+          await runTask({
+            label: 'members',
+            task: membersUpdater,
+            args: [dbCourse, course],
+            logOptions
+          })
         }
 
         const tasks = {
@@ -106,22 +112,26 @@ const updater = async (logOptions) => {
           files: filesUpdater
         }
 
-        const promises = Object.keys(tasks).map(async (task) => {
-          if (config.notifications[task]) {
-            await runTask(task, tasks[task], logOptions, dbCourse, course)
+        const promises = Object.keys(tasks).map(async (label) => {
+          if (config.notifications[label]) {
+            await runTask({
+              label,
+              task: tasks[label],
+              args: [dbCourse, course],
+              logOptions
+            })
           }
         })
 
         await Promise.all(promises)
 
         if (config.notifications.syllabus) {
-          await runTask(
-            'syllabus',
-            syllabusUpdater,
-            logOptions,
-            dbCourse,
-            course
-          )
+          await runTask({
+            label: 'syllabus',
+            task: syllabusUpdater,
+            args: [dbCourse, course],
+            logOptions
+          })
         }
       } catch (err) {
         await SendLog.error(err)
