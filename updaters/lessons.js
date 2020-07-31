@@ -82,15 +82,19 @@ const updaterLessons = async (dbCourse, course) => {
           if (attachment.type === 'quiz') {
             const foundQuiz = await Quiz.findOne({
               where: {
-                lessonId: dbLesson.id,
                 institutionalId: attachment.id
               }
             })
-            if (!foundQuiz) {
+            if (foundQuiz) {
+              if (foundQuiz.lessonId !== dbLesson.id) {
+                await foundQuiz.update({
+                  lessonId: dbLesson.id
+                })
+              }
+            } else {
               const quizTitle = attachment.title
               const quizStartDate = await attachment.startDate
               const quizEndDate = await attachment.endDate
-
               const msgArray = [`Pesquisa de ${prettyCourseName}`]
               msgArray.push(quizTitle)
               msgArray.push(
@@ -114,12 +118,17 @@ const updaterLessons = async (dbCourse, course) => {
           } else if (attachment.type === 'scheduled-chat') {
             const foundScheduledChat = await ScheduledChat.findOne({
               where: {
-                lessonId: dbLesson.id,
                 institutionalId: attachment.id
               }
             })
 
-            if (!foundScheduledChat) {
+            if (foundScheduledChat) {
+              if (foundScheduledChat.lessonId !== dbLesson.id) {
+                await foundScheduledChat.update({
+                  lessonId: dbLesson.id
+                })
+              }
+            } else {
               const chatTitle = attachment.title
               const chatStartDate = await attachment.startDate
               const chatEndDate = await attachment.endDate
@@ -231,11 +240,16 @@ const updaterLessons = async (dbCourse, course) => {
           } else if (attachment.type === 'webcontent') {
             const foundContent = await Content.findOne({
               where: {
-                lessonId: dbLesson.id,
                 institutionalId: attachment.id
               }
             })
-            if (!foundContent) {
+            if (foundContent) {
+              if (foundContent.lessonId !== dbLesson.id) {
+                await foundContent.update({
+                  lessonId: dbLesson.id
+                })
+              }
+            } else {
               const webContentTitle = attachment.title
               const webContentBody = await attachment.getContent()
               const webcontentDate = await attachment.getDate()
