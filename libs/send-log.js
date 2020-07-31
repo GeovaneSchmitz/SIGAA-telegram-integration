@@ -62,10 +62,10 @@ class SendLog {
       const timeout = parseInt(err.description.match(/[0-9]+/g)[0], 10)
       await new Promise((resolve) => setTimeout(resolve, timeout * 1000))
     } else {
-      console.error(err)
       if (sendToTelegram) {
         for (const property of Object.getOwnPropertyNames(err)) {
           if (property !== 'message') {
+            console.log(`Error:${err.message}\n${property}:${err[property]}`)
             await SendLog._sendToTelegram(
               `Error:${err.message}\n${property}:${err[property]}`
             )
