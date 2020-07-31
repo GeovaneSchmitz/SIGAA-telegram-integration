@@ -31,27 +31,60 @@ const config = require('../config')
  */
 const htmlTextToLatexCode = (html) => {
   let newText = html
-  const replaces = [
+
+  newText = newText.replace(/◦/g, '·') // fix item lists
+
+  const tags = [
     {
-      pattern: /<b>|<strong>/g,
+      tagName: 'b',
       replacement: '\\textbf{'
     },
     {
-      pattern: /<i>|<em>/g,
+      tagName: 'strong',
+      replacement: '\\textbf{'
+    },
+    {
+      tagName: 'i',
       replacement: '\\textit{'
     },
     {
-      pattern: /<\/em>|<\/i>|<\/strong>|<\/b>/g,
-      replacement: '}'
-    },
-    {
-      pattern: /◦/g,
-      replacement: '·'
+      tagName: 'em',
+      replacement: '\\textit{'
     }
   ]
+  for (const tag of tags) {
+    const openTagRegExpGlobal = RegExp(`<${tag.tagName}>`, 'g')
+    const closeTagRegExpGlobal = RegExp(`</${tag.tagName}>`, 'g')
 
-  for (const replace of replaces) {
-    newText = newText.replace(replace.pattern, replace.replacement)
+    const openTagResult = openTagRegExpGlobal.exec(newText)
+    const closeTagResult = closeTagRegExpGlobal.exec(newText)
+
+    if (
+      closeTagResult !== null &&
+      (openTagResult === null ||
+        closeTagRegExpGlobal.lastIndex < openTagRegExpGlobal.lastIndex)
+    ) {
+      newText = tag.replacement + newText
+    }
+
+    openTagRegExpGlobal.lastIndex = 0
+    closeTagRegExpGlobal.lastIndex = 0
+
+    while (openTagRegExpGlobal.exec(newText) !== null) {
+      newText = newText.replace(RegExp(`<${tag.tagName}>`), tag.replacement)
+    }
+
+    while (closeTagRegExpGlobal.exec(newText) !== null) {
+      newText = newText.replace(RegExp(`</${tag.tagName}>`), '}')
+    }
+
+    if (
+      openTagResult !== null &&
+      (closeTagResult === null ||
+        closeTagRegExpGlobal.lastIndex < openTagRegExpGlobal.lastIndex)
+    ) {
+      newText += '}'
+    }
   }
   return newText
 }
@@ -166,6 +199,7 @@ const generatePDF = (view, filepath) => {
     })
     pdf.pipe(output)
     pdf.on('error', (err) => {
+      err.latexDoc = latexDoc
       reject(err)
     })
     pdf.on('finish', () => resolve())
