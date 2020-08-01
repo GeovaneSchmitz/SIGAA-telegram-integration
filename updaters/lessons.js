@@ -21,12 +21,13 @@ const SendLog = require('../libs/send-log')
  */
 const updaterLessons = async (dbCourse, course) => {
   const {
+    Content,
+    Homework,
     Lesson,
+    Link,
     Quiz,
     ScheduledChat,
-    Homework,
-    Video,
-    Content
+    Video
   } = sequelize.models
 
   const prettyCourseName = TextUtils.getPrettyCourseTitle(course.title)
@@ -303,6 +304,34 @@ const updaterLessons = async (dbCourse, course) => {
                 title: videoTitle,
                 url: attachment.src,
                 body: videoDescription
+              })
+            }
+          } else if (attachment.type === 'link') {
+            const foundLink = await Link.findOne({
+              where: {
+                lessonId: dbLesson.id,
+                url: attachment.href
+              }
+            })
+            if (!foundLink) {
+              const linkTitle = attachment.title
+              const linkDescription = attachment.description
+
+              const msgArray = [prettyCourseName]
+              msgArray.push(attachment.src)
+              msgArray.push(linkTitle)
+              msgArray.push(linkDescription)
+              const msg = msgArray.join('\n')
+
+              EmailLookup.lookupEmailsAndSave(dbCourse, linkDescription)
+
+              await TelegramUtils.sendNotificationMessage(msg)
+
+              await Video.create({
+                lessonId: dbLesson.id,
+                title: linkTitle,
+                url: attachment.href,
+                body: linkDescription
               })
             }
           }

@@ -22,6 +22,7 @@ class Lesson extends Model {
     Lesson.hasMany(models.Quiz, { foreignKey: 'lesson_id' })
     Lesson.hasMany(models.Content, { foreignKey: 'lesson_id' })
     Lesson.hasMany(models.Video, { foreignKey: 'lesson_id' })
+    Lesson.hasMany(models.Link, { foreignKey: 'lesson_id' })
     Lesson.hasMany(models.ScheduledChat, { foreignKey: 'lesson_id' })
   }
 }

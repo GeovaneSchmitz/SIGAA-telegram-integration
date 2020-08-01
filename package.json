@@ -18,7 +18,7 @@
     "pg": "^8.0.3",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.21.7",
-    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#de2e9b3abd4dd4a853ad0b69f00d186b5cef2271",
+    "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#3eaad20bba4782eb6d8e7a18e6053d2cc2b81869",
     "telegraf": "^3.36.0"
   },
   "devDependencies": {

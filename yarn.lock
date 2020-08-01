@@ -1517,9 +1517,9 @@ shimmer@^1.1.0:
   resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.2.1.tgz#610859f7de327b587efebf501fb43117f9aff337"
   integrity sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==
 
-sigaa-api@GeovaneSchmitz/SIGAA-node-interface#de2e9b3abd4dd4a853ad0b69f00d186b5cef2271:
+sigaa-api@GeovaneSchmitz/SIGAA-node-interface#3eaad20bba4782eb6d8e7a18e6053d2cc2b81869:
   version "0.1.0"
-  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/de2e9b3abd4dd4a853ad0b69f00d186b5cef2271"
+  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/3eaad20bba4782eb6d8e7a18e6053d2cc2b81869"
   dependencies:
     cheerio "^1.0.0-rc.3"
     formdata-node "^2.1.1"
