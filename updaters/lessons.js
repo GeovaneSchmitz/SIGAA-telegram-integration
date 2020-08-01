@@ -318,16 +318,14 @@ const updaterLessons = async (dbCourse, course) => {
               const linkDescription = attachment.description
 
               const msgArray = [prettyCourseName]
-              msgArray.push(attachment.src)
+              msgArray.push(attachment.href)
               msgArray.push(linkTitle)
               msgArray.push(linkDescription)
               const msg = msgArray.join('\n')
 
-              EmailLookup.lookupEmailsAndSave(dbCourse, linkDescription)
-
               await TelegramUtils.sendNotificationMessage(msg)
 
-              await Video.create({
+              await Link.create({
                 lessonId: dbLesson.id,
                 title: linkTitle,
                 url: attachment.href,
