@@ -2,6 +2,7 @@ Criado para informar e acelera o uso do SIGAA.
 ## Disclaimer
 Este bot não é oficial.
 Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando Web Scraping com nodejs e telegraf com PostgreSQL.
+Mesmo assim, estou disponível para ajudar a portar para outras instituições ou para esclacer qualquer duvidas. Todas as críticas ou ajuda ao desenvolvimento serão bem-vindos.
 
 ## Funcionalidades
 <img alt="/start" src="assets/screenshot-start.jpg" width="290" /><img alt="/email" src="assets/screenshot-email.jpg" width="290" /><img alt="/agenda" src="assets/screenshot-calendar.jpg" width="290" />
@@ -45,5 +46,6 @@ BOT_TOKEN="<seu token>"
 * Configurar o bot usando o arquivo `config.js`
 * Renomear o arquivo de configuração `database.example.json` para `database.json`
 * Colocar os dados de acesso do PostgreSQL no arquivo database.json
+* Instalar todos os pacotes LaTeX contidos no arquivo `texlive.packages`
 * Executar `npm run migrate` para construir a estrutura do banco de dados
 * Executar o arquivo com o nodejs `npm run start` ou `yarn run start`
