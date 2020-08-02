@@ -319,10 +319,9 @@ const updaterLessons = async (dbCourse, course) => {
 
               const msgArray = [prettyCourseName]
               msgArray.push(attachment.href)
-              msgArray.push(linkTitle)
-              msgArray.push(linkDescription)
+              if (linkTitle) msgArray.push(linkTitle)
+              if (linkDescription) msgArray.push(linkDescription)
               const msg = msgArray.join('\n')
-
               await TelegramUtils.sendNotificationMessage(msg)
 
               await Link.create({
