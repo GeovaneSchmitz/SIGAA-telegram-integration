@@ -1097,9 +1097,9 @@ next-tick@~1.0.0:
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
 node-fetch@^2.2.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
-  integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-latex@^2.6.3:
   version "2.6.3"
@@ -1517,9 +1517,10 @@ shimmer@^1.1.0:
   resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.2.1.tgz#610859f7de327b587efebf501fb43117f9aff337"
   integrity sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==
 
-sigaa-api@GeovaneSchmitz/SIGAA-node-interface#3eaad20bba4782eb6d8e7a18e6053d2cc2b81869:
+sigaa-api@GeovaneSchmitz/SIGAA-node-interface#6470c7eab8d42904e6b6f3b48dafb8d42f2233ac:
   version "0.1.0"
-  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/3eaad20bba4782eb6d8e7a18e6053d2cc2b81869"
+  uid "6470c7eab8d42904e6b6f3b48dafb8d42f2233ac"
+  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/6470c7eab8d42904e6b6f3b48dafb8d42f2233ac"
   dependencies:
     cheerio "^1.0.0-rc.3"
     formdata-node "^2.1.1"
