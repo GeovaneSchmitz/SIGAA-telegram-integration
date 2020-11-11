@@ -210,7 +210,7 @@ const updaterLessons = async (dbCourse, course) => {
               try {
                 const file = await attachment.getAttachmentFile()
                 const dbFile = SigaaUtils.sendNotificationSigaaFile(
-                  course,
+                  dbCourse,
                   file,
                   {},
                   msgIds
