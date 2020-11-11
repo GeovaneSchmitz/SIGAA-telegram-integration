@@ -93,7 +93,60 @@ const htmlTextToLatexCode = (html) => {
  * Escape latex characters and convert html tag to latex code
  */
 Mustache.escape = (text) => {
-  return htmlTextToLatexCode(escapeLatex(text))
+  let escapedText = escapeLatex(text)
+  const charactersToReplace = [
+    { find: '≈', replacement: '$\\approx$' },
+    { find: '≍', replacement: '$\\asymp$' },
+    { find: '∵', replacement: '$\\because$' },
+    { find: '⋈', replacement: '$\\bowtie$' },
+    { find: '≅', replacement: '$\\cong$' },
+    { find: '⊣', replacement: '$\\dashv$' },
+    { find: '≐', replacement: '$\\doteq$' },
+    { find: '≡', replacement: '$\\equiv$' },
+    { find: '⌢', replacement: '$\\frown$' },
+    { find: '≥', replacement: '$\\geq$' },
+    { find: '≫', replacement: '$\\gg$' },
+    { find: '∈', replacement: '$\\in$' },
+    { find: '≤', replacement: '$\\leq$' },
+    { find: '≪', replacement: '$\\ll$' },
+    { find: '∡', replacement: '$\\measuredangle$' },
+    { find: '∣', replacement: '$\\mid$' },
+    { find: '⊨', replacement: '$\\models$' },
+    { find: '≠', replacement: '$\\neq$' },
+    { find: '∋', replacement: '$\\ni$' },
+    { find: '∉', replacement: '$\\notin$' },
+    { find: '∦', replacement: '$\\nparallel$' },
+    { find: '⊈', replacement: '$\\nsubseteq$' },
+    { find: '⊉', replacement: '$\\nsupseteq$' },
+    { find: '∥', replacement: '$\\parallel$' },
+    { find: '⊥', replacement: '$\\perp$' },
+    { find: '≺', replacement: '$\\prec$' },
+    { find: '⪯', replacement: '$\\preceq$' },
+    { find: '∝', replacement: '$\\propto$' },
+    { find: '∼', replacement: '$\\sim$' },
+    { find: '≃', replacement: '$\\simeq$' },
+    { find: '⌣', replacement: '$\\smile$' },
+    { find: '∢', replacement: '$\\sphericalangle$' },
+    { find: '⊏', replacement: '$\\sqsubset$' },
+    { find: '⊑', replacement: '$\\sqsubseteq$' },
+    { find: '⊐', replacement: '$\\sqsupset$' },
+    { find: '⊒', replacement: '$\\sqsupseteq$' },
+    { find: '⊂', replacement: '$\\subset$' },
+    { find: '⊆', replacement: '$\\subseteq$' },
+    { find: '≻', replacement: '$\\succ$' },
+    { find: '⪰', replacement: '$\\succeq$' },
+    { find: '⊃', replacement: '$\\supset$' },
+    { find: '⊇', replacement: '$\\supseteq$' },
+    { find: '∴', replacement: '$\\therefore$' },
+    { find: '⊢', replacement: '$\\vdash$' }
+  ]
+  for (const replace of charactersToReplace) {
+    escapedText = escapedText.replace(
+      new RegExp(replace.find, 'g'),
+      replace.replacement
+    )
+  }
+  return htmlTextToLatexCode(escapedText)
 }
 
 /**
@@ -176,7 +229,7 @@ const generateViewTemplate = async (syllabus, dbCourse) => {
       date: TextUtils.createDatesString(lesson.startDate, lesson.endDate, {
         year: true
       }),
-      body: lesson.body
+      body: TextUtils.truncateString(lesson.body, 180)
     }
   })
 
