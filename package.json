@@ -14,22 +14,22 @@
     "dotenv": "^8.1.0",
     "escape-latex": "^1.2.0",
     "mustache": "^4.0.1",
-    "node-latex": "^2.6.3",
+    "node-latex": "^3.0.0",
     "pg": "^8.0.3",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^5.21.7",
+    "sequelize": "^6.3.5",
     "sigaa-api": "GeovaneSchmitz/SIGAA-node-interface#6470c7eab8d42904e6b6f3b48dafb8d42f2233ac",
     "telegraf": "^3.36.0"
   },
   "devDependencies": {
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^6.11.0",
-    "eslint-config-standard": "^14.1.1",
+    "eslint-config-standard": "^16.0.1",
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "jsdoc": "^3.6.3",
     "prettier": "^2.0.5",
-    "sequelize-cli": "^5.5.1"
+    "sequelize-cli": "^6.2.0"
   }
 }

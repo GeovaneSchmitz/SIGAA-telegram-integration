@@ -99,7 +99,7 @@ const updaterLessons = async (dbCourse, course) => {
               const msgArray = [`Pesquisa de ${prettyCourseName}`]
               msgArray.push(quizTitle)
               msgArray.push(
-                `PerÃ­odo de envio ${TextUtils.createPeriodString(
+                `Perí­odo de envio ${TextUtils.createPeriodString(
                   quizStartDate,
                   quizEndDate
                 )}`
@@ -142,7 +142,7 @@ const updaterLessons = async (dbCourse, course) => {
               msgArray.push(chatDescription)
               msgArray.push('')
               msgArray.push(
-                `PerÃ­odo do chat ${TextUtils.createPeriodString(
+                `Período do chat ${TextUtils.createPeriodString(
                   chatStartDate,
                   chatEndDate
                 )}`
@@ -189,7 +189,7 @@ const updaterLessons = async (dbCourse, course) => {
                 msgArray.push('Possui nota')
               }
               msgArray.push(
-                `PerÃ­odo de envio ${TextUtils.createPeriodString(
+                `Período de envio ${TextUtils.createPeriodString(
                   homeworkStartDate,
                   homeworkEndDate
                 )}`
