@@ -188,8 +188,8 @@ Mustache.escape = (text) => {
     { find: '⨿', replacement: '$\\amalg$' },
     { find: '⪯', replacement: '$\\preceq$' },
     { find: '⪰', replacement: '$\\succeq$' },
-    { find: '\u2028', replacement: '' },
-    { find: '\u2029', replacement: '' }
+    { find: '\u2028', replacement: '\n' },
+    { find: '\u2029', replacement: '\n' }
   ]
   for (const replace of charactersToReplace) {
     escapedText = escapedText.replace(
