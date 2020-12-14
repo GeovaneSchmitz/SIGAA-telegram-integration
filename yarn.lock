@@ -829,9 +829,9 @@ inherits@2, inherits@^2.0.1, inherits@^2.0.3, inherits@~2.0.3:
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
 ini@^1.3.4:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
-  integrity sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
+  integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
 is-core-module@^2.1.0:
   version "2.1.0"
@@ -1494,9 +1494,10 @@ shebang-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
-sigaa-api@GeovaneSchmitz/SIGAA-node-interface#6470c7eab8d42904e6b6f3b48dafb8d42f2233ac:
+sigaa-api@GeovaneSchmitz/SIGAA-node-interface#0291f2b1b8a9afc8ef834ec95748fe6fe7411cc8:
   version "0.1.0"
-  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/6470c7eab8d42904e6b6f3b48dafb8d42f2233ac"
+  uid "0291f2b1b8a9afc8ef834ec95748fe6fe7411cc8"
+  resolved "https://codeload.github.com/GeovaneSchmitz/SIGAA-node-interface/tar.gz/0291f2b1b8a9afc8ef834ec95748fe6fe7411cc8"
   dependencies:
     cheerio "^1.0.0-rc.3"
     formdata-node "^2.1.1"
