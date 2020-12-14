@@ -99,7 +99,7 @@ const updaterLessons = async (dbCourse, course) => {
               const msgArray = [`Pesquisa de ${prettyCourseName}`]
               msgArray.push(quizTitle)
               msgArray.push(
-                `Perí­odo de envio ${TextUtils.createPeriodString(
+                `PerÃ­odo de envio ${TextUtils.createPeriodString(
                   quizStartDate,
                   quizEndDate
                 )}`
@@ -142,7 +142,7 @@ const updaterLessons = async (dbCourse, course) => {
               msgArray.push(chatDescription)
               msgArray.push('')
               msgArray.push(
-                `Período do chat ${TextUtils.createPeriodString(
+                `PerÃ­odo do chat ${TextUtils.createPeriodString(
                   chatStartDate,
                   chatEndDate
                 )}`
@@ -189,7 +189,7 @@ const updaterLessons = async (dbCourse, course) => {
                 msgArray.push('Possui nota')
               }
               msgArray.push(
-                `Período de envio ${TextUtils.createPeriodString(
+                `PerÃ­odo de envio ${TextUtils.createPeriodString(
                   homeworkStartDate,
                   homeworkEndDate
                 )}`
@@ -261,9 +261,7 @@ const updaterLessons = async (dbCourse, course) => {
                 msgArray.push(attachment.description)
               }
               msgArray.push(webContentBody)
-              msgArray.push(
-                TextUtils.createDateString(webcontentDate, { inWords: true })
-              )
+              msgArray.push(TextUtils.createDateString(webcontentDate))
               const msg = msgArray.join('\n')
 
               EmailLookup.lookupEmailsAndSave(dbCourse, webContentBody)
