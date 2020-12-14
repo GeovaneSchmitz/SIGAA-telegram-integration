@@ -50,7 +50,8 @@ const updaterLessons = async (dbCourse, course) => {
         }
       })
 
-      if (!dbLesson) {
+      const deltaDate = Date.now() - lesson.startDate.valueOf() + 86400000 // 1 day
+      if (!dbLesson && deltaDate > 0) {
         const date = TextUtils.createDatesString(
           lesson.startDate,
           lesson.endDate
