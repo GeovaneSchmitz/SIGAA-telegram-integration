@@ -8,7 +8,8 @@ class Lesson extends Model {
         title: DataTypes.TEXT,
         body: DataTypes.TEXT,
         startDate: DataTypes.DATE,
-        endDate: DataTypes.DATE
+        endDate: DataTypes.DATE,
+        sent: DataTypes.BOOLEAN
       },
       {
         sequelize

@@ -50,8 +50,20 @@ const updaterLessons = async (dbCourse, course) => {
         }
       })
 
+      if (!dbLesson) {
+        dbLesson = await Lesson.create({
+          courseId: dbCourse.id,
+          title: lesson.title,
+          body: lesson.contentText,
+          startDate: lesson.startDate,
+          endDate: lesson.endDate,
+          sent: false
+        })
+      }
+
       const deltaDate = Date.now() - lesson.startDate.valueOf() + 86400000 // 1 day
-      if (!dbLesson && deltaDate > 0) {
+
+      if (!dbLesson.sent && deltaDate > 0) {
         const date = TextUtils.createDatesString(
           lesson.startDate,
           lesson.endDate
@@ -67,15 +79,14 @@ const updaterLessons = async (dbCourse, course) => {
 
         const msg = msgArray.join('\n')
 
-        EmailLookup.lookupEmailsAndSave(dbCourse, lesson.contentText)
+        EmailLookup.lookupEmailsAndSave(
+          dbCourse,
+          lesson.contentText
+        ).catch((err) => SendLog.error(err))
 
-        TelegramUtils.sendNotificationMessage(msg)
-        dbLesson = await Lesson.create({
-          courseId: dbCourse.id,
-          title: lesson.title,
-          body: lesson.contentText,
-          startDate: lesson.startDate,
-          endDate: lesson.endDate
+        await TelegramUtils.sendNotificationMessage(msg)
+        await dbLesson.update({
+          sent: true
         })
       }
 
@@ -136,7 +147,10 @@ const updaterLessons = async (dbCourse, course) => {
               const chatEndDate = await attachment.endDate
               const chatDescription = await attachment.getDescription()
 
-              EmailLookup.lookupEmailsAndSave(dbCourse, chatDescription)
+              EmailLookup.lookupEmailsAndSave(
+                dbCourse,
+                chatDescription
+              ).catch((err) => SendLog.error(err))
 
               const msgArray = [`Chat agendado de ${prettyCourseName}`]
               msgArray.push(chatTitle)
@@ -180,7 +194,10 @@ const updaterLessons = async (dbCourse, course) => {
               const homeworkStartDate = await attachment.startDate
               const homeworkEndDate = await attachment.endDate
 
-              EmailLookup.lookupEmailsAndSave(dbCourse, homeworkDescription)
+              EmailLookup.lookupEmailsAndSave(
+                dbCourse,
+                homeworkDescription
+              ).catch((err) => SendLog.error(err))
 
               const msgArray = [`Tarefa de ${prettyCourseName}`]
               msgArray.push(homeworkTitle)
@@ -265,7 +282,10 @@ const updaterLessons = async (dbCourse, course) => {
               msgArray.push(TextUtils.createDateString(webcontentDate))
               const msg = msgArray.join('\n')
 
-              EmailLookup.lookupEmailsAndSave(dbCourse, webContentBody)
+              EmailLookup.lookupEmailsAndSave(
+                dbCourse,
+                webContentBody
+              ).catch((err) => SendLog.error(err))
 
               await TelegramUtils.sendNotificationMessage(msg)
 
@@ -294,7 +314,10 @@ const updaterLessons = async (dbCourse, course) => {
               msgArray.push(videoDescription)
               const msg = msgArray.join('\n')
 
-              EmailLookup.lookupEmailsAndSave(dbCourse, videoDescription)
+              EmailLookup.lookupEmailsAndSave(
+                dbCourse,
+                videoDescription
+              ).catch((err) => SendLog.error(err))
 
               await TelegramUtils.sendNotificationMessage(msg)
 
