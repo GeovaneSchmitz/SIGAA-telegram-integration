@@ -167,6 +167,19 @@ class TextUtils {
   }
 
   /**
+   * @description Truncate a string and concat with ...
+   * @param {string} string string to truncate
+   * @param {number} size maximum string length
+   * @returns {string}
+   */
+  static truncateString(string, size) {
+    if (string.length <= size) {
+      return string
+    }
+    return string.slice(0, size) + '...'
+  }
+
+  /**
    * @description create date string in format 'DD/MM/YY' or 'DD/MM' (Brazilian format)
    * @param {Date} date date to create string
    * @param {Object} options
