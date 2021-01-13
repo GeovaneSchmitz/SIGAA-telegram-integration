@@ -5,7 +5,7 @@ Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando We
 Mesmo assim, estou disponível para ajudar a portar para outras instituições ou para esclacer qualquer duvidas. Todas as críticas ou ajuda ao desenvolvimento serão bem-vindos.
 
 ## Funcionalidades
-<img alt="/start" src="assets/screenshot-start.jpg" width="290" /><img alt="/email" src="assets/screenshot-email.jpg" width="290" /><img alt="/agenda" src="assets/screenshot-calendar.jpg" width="290" />
+<img alt="/start" src="assets/screenshot-start.jpg" width="280" /><img alt="/email" src="assets/screenshot-email.jpg" width="280" /><img alt="/agenda" src="assets/screenshot-calendar.jpg" width="280" />
 
 ### Notificações
 * Em grupos ou chat privado
