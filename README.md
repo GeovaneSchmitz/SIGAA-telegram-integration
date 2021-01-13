@@ -1,10 +1,15 @@
-Criado para informar e acelera o uso do SIGAA.
-## Disclaimer
-Este bot não é oficial.
-Eu sou estudante do IFSC, onde desenvolvo este projeto em tempo livre, usando Web Scraping com nodejs e telegraf com PostgreSQL.
-Mesmo assim, estou disponível para ajudar a portar para outras instituições ou para esclacer qualquer duvidas. Todas as críticas ou ajuda ao desenvolvimento serão bem-vindos.
+
+## Porquê?
+* Ele foi pensado para que os alunos recebam de forma rapida as atualições do IFSC ou façam pesquisas.
+
+* Serve para aprender a usar tecnologias como: nodejs, telegraf e PostgreSQL.
+
+* Talvez seja possivel expandir para outras instituições que utilizem a mesma plataforma (SIGAA), caso alguém queira, estou disponível para ajudar a portar ou para esclacer qualquer duvidas. Todas as críticas ou ajuda ao desenvolvimento serão bem-vindos :)
 
 ## Funcionalidades
+#### Mesmo ele não sendo oficial, ele contém várias funcionalidades
+
+
 <img alt="/start" src="assets/screenshot-start.jpg" width="280" /><img alt="/email" src="assets/screenshot-email.jpg" width="280" /><img alt="/agenda" src="assets/screenshot-calendar.jpg" width="280" />
 
 ### Notificações
@@ -21,7 +26,7 @@ Mesmo assim, estou disponível para ajudar a portar para outras instituições o
 * Busca de email e agenda de professor
 `/agenda <nome do professor ou da turma>` ou `/email <nome do professor ou da turma>`
 * Buscar atendimento `/atendimento`
-* ver o plano de ensino `/plano`
+* ver o plano de ensino `/plano` - Os planos de ensino são documentos PDFs criados pelo bot que contém o conteúdo da disciplina.
 * Ver as notas `/vernotas` 
 * Forçar atualização `/atualizar`
 
