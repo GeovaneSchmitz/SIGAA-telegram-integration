@@ -1,3 +1,9 @@
+## ARQUIVAMENTO
+    A bastante tempo este projeto não sobre atualizações, e por isso, estou arquivando ele.
+    Eu já terminei o meu curso no IFSC, além disso a minha vida profissional me tomou bastante tempo e sinto que já passou o momento deste projeto.
+
+    Eu acho que este projeto compriu o seu objetivo, e eu fico feliz por ter ajudado algumas pessoas.
+
 
 ## Porquê?
 * Ele foi pensado para que os alunos recebam de forma rapida as atualições do IFSC ou façam pesquisas.
